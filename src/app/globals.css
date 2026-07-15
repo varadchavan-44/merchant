@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — Monsoon / campus merch drop
+  Direction: modern, minimal, restrained. No cream+terracotta, no
+  near-black+acid-accent, no broadsheet hairlines. Grounded instead in
+  the actual mechanic (commit-then-print, precise counts, thresholds)
+  and VNIT's engineering register — a blueprint/instrument feel rather
+  than "youth streetwear."
+*/
+
+:root {
+  --paper: #f6f6f3;
+  --paper-raised: #ffffff;
+  --ink: #14140f;
+  --ink-soft: #57574f;
+  --line: #dedad0;
+  --line-strong: #b9b4a6;
+  --signal: #1e3f78;       /* blueprint blue — used only for live/active data */
+  --signal-soft: #e8edf5;
+  --warn: #9a5b17;         /* used only for "acting soon" / cutoff warnings */
+  --warn-soft: #f6ead9;
+  --ok: #2f6e51;           /* used only for confirmed/verified states */
+  --ok-soft: #e7f0ea;
+
+  --font-display: var(--font-space-grotesk);
+  --font-body: var(--font-instrument-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* Gauge: the site's signature element. A hairline tick-marked meter
+   used everywhere a commit count appears — landing hero, catalog cards,
+   product detail. Reads like an instrument, not a progress-bar cliché. */
+.gauge {
+  position: relative;
+  height: 3px;
+  background: var(--line);
+  border-radius: 0;
+}
+.gauge-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--signal);
+  transform-origin: left;
+}
+.gauge-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+}
+.gauge-ticks span {
+  width: 1px;
+  height: 7px;
+  background: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
