@@ -5,6 +5,8 @@ import { getProducts, getDropConfig, formatPrice } from "@/lib/data";
 import { Countdown } from "@/components/Countdown";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 export default async function CatalogPage() {
   const [products, config] = await Promise.all([getProducts(), getDropConfig()]);
 

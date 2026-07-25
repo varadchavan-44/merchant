@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Countdown } from "@/components/Countdown";
 import { Gauge } from "@/components/Gauge";
 import { getProducts, getDropConfig, totalCommits, formatPrice } from "@/lib/data";
+export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   const [products, config] = await Promise.all([getProducts(), getDropConfig()]);
