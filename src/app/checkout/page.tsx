@@ -2,27 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { formatPrice } from "@/lib/data";
+import { BuyerDetails, CartItem } from "@/lib/types";
 
-interface Draft {
-  productId: string;
-  productName: string;
-  sizeId: string;
-  sizeLabel: string;
-  quantity: number;
-  unitPricePaise: number;
-  buyerName: string;
-  rollNo: string;
-  phone: string;
-  pickupLocation: string;
+interface CheckoutDraft {
+  items: CartItem[];
+  buyer: BuyerDetails;
   refCode?: string;
 }
 
-const UPI_ID = "yourvpa@bank"; // TODO: replace with the real collection UPI ID
-
 export default function CheckoutPage() {
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<CheckoutDraft | null>(null);
+  const [payConfig, setPayConfig] = useState<{ upi_id: string | null; qr_image_url: string | null } | null>(null);
   const [utr, setUtr] = useState("");
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -30,9 +23,16 @@ export default function CheckoutPage() {
   const [orderCode, setOrderCode] = useState("");
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("order_draft");
+    const raw = sessionStorage.getItem("checkout_draft");
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reading a browser-only store on mount, not derived state
     if (raw) setDraft(JSON.parse(raw));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setPayConfig(data))
+      .catch(() => setPayConfig(null));
   }, []);
 
   if (orderCode) {
@@ -57,7 +57,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!draft) {
+  if (!draft || draft.items.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
         <SiteHeader />
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const total = draft.unitPricePaise * draft.quantity;
+  const total = draft.items.reduce((sum, i) => sum + i.unitPricePaise * i.quantity, 0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +85,9 @@ export default function CheckoutPage() {
     setError("");
 
     const form = new FormData();
-    form.set("draft", JSON.stringify(draft));
+    form.set("items", JSON.stringify(draft!.items));
+    form.set("buyer", JSON.stringify(draft!.buyer));
+    form.set("refCode", draft!.refCode ?? "");
     form.set("utr", utr.trim());
     if (screenshot) form.set("screenshot", screenshot);
 
@@ -97,7 +99,7 @@ export default function CheckoutPage() {
         setSubmitting(false);
         return;
       }
-      sessionStorage.removeItem("order_draft");
+      sessionStorage.removeItem("checkout_draft");
       setOrderCode(data.orderCode);
     } catch {
       setError("Network error — try again.");
@@ -112,10 +114,17 @@ export default function CheckoutPage() {
         <h1 className="font-display font-medium text-2xl mb-8">Pay by UPI</h1>
 
         <div className="border border-line p-5 mb-8">
-          <div className="flex items-baseline justify-between text-sm mb-1">
-            <span>{draft.productName}</span>
-            <span className="text-ink-soft">size {draft.sizeLabel} × {draft.quantity}</span>
-          </div>
+          {draft.items.map((item) => (
+            <div
+              key={`${item.productId}-${item.sizeId}`}
+              className="flex items-baseline justify-between text-sm mb-1"
+            >
+              <span>{item.productName}</span>
+              <span className="text-ink-soft">
+                size {item.sizeLabel} × {item.quantity}
+              </span>
+            </div>
+          ))}
           <div className="flex items-baseline justify-between mono-num text-lg mt-3 pt-3 border-t border-line">
             <span className="text-sm font-sans">Total</span>
             <span>{formatPrice(total)}</span>
@@ -123,8 +132,18 @@ export default function CheckoutPage() {
         </div>
 
         <div className="text-center mb-8">
-          <div className="w-44 h-44 bg-paper-raised border border-line mx-auto mb-3" />
-          <p className="mono-num text-sm">{UPI_ID}</p>
+          <div className="relative w-44 h-44 bg-paper-raised border border-line mx-auto mb-3 overflow-hidden">
+            {payConfig?.qr_image_url ? (
+              <Image
+                src={payConfig.qr_image_url}
+                alt="Payment QR code"
+                fill
+                sizes="176px"
+                className="object-contain"
+              />
+            ) : null}
+          </div>
+          <p className="mono-num text-sm">{payConfig?.upi_id || "UPI ID not set up yet — contact the seller"}</p>
           <p className="text-xs text-ink-soft mt-1">Scan or pay to this ID for the exact amount above.</p>
         </div>
 

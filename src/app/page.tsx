@@ -2,13 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Countdown } from "@/components/Countdown";
-import { Gauge } from "@/components/Gauge";
-import { getProducts, getDropConfig, totalCommits, formatPrice } from "@/lib/data";
+import { getProducts, getDropConfig, formatPrice } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   const [products, config] = await Promise.all([getProducts(), getDropConfig()]);
-  const total = totalCommits(products);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -36,12 +34,6 @@ export default async function LandingPage() {
             <Countdown cutoff={config.cutoff_at} extended={config.extended} />
           </div>
 
-          <div className="mt-10 pt-6 border-t border-line flex items-baseline gap-2">
-            <span className="mono-num text-2xl" style={{ color: "var(--signal)" }}>
-              {total}
-            </span>
-            <span className="text-sm text-ink-soft">units committed to across all designs so far</span>
-          </div>
         </section>
 
         <section className="max-w-5xl mx-auto px-6 pb-20">
@@ -54,9 +46,6 @@ export default async function LandingPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-line">
             {products.map((p) => {
-              const closest = [...p.sizes].sort(
-                (a, b) => b.commit_count / b.commit_threshold - a.commit_count / a.commit_threshold
-              )[0];
               return (
                 <Link
                   key={p.id}
@@ -83,14 +72,6 @@ export default async function LandingPage() {
                     </div>
                     <p className="text-sm text-ink-soft mt-1 leading-relaxed">{p.description}</p>
                   </div>
-                  {closest && (
-                    <Gauge
-                      count={closest.commit_count}
-                      threshold={closest.commit_threshold}
-                      status={closest.status}
-                      label={`closest to print — size ${closest.size_label}`}
-                    />
-                  )}
                 </Link>
               );
             })}

@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
   }
 
   let query = supabase.from("orders").select(
-    "order_code, status, buyer_name, pickup_location, created_at, order_items(quantity, products(name), product_sizes(size_label))"
+    "order_code, status, buyer_name, day_scholar, hostel_name, room_number, created_at, order_items(quantity, products(name), product_sizes(size_label))"
   );
 
-  query = code ? query.eq("order_code", code) : query.eq("phone", phone);
+  query = code ? query.eq("order_code", code) : query.eq("mobile_number", phone);
 
   const { data, error } = await query;
   if (error) {

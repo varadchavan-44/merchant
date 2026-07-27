@@ -30,4 +30,25 @@ export interface Product {
 export interface DropConfig {
   cutoff_at: string;
   extended: boolean;
+  upi_id: string | null;
+  qr_image_url: string | null;
+}
+
+export interface CartItem {
+  productId: string;
+  productName: string;
+  sizeId: string;
+  sizeLabel: string;
+  quantity: number;
+  unitPricePaise: number;
+}
+
+export interface BuyerDetails {
+  name: string;
+  mobile: string;
+  idNumber: string;
+  enrolmentNumber: string;
+  dayScholar: boolean;
+  hostelName: string;
+  roomNumber: string;
 }

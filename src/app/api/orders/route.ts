@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { BuyerDetails, CartItem } from "@/lib/types";
 
 function generateOrderCode() {
   // 6 digits (100000-999999) — 900,000 possible codes instead of the
@@ -23,15 +24,37 @@ export async function POST(req: NextRequest) {
   }
 
   const form = await req.formData();
-  const draftRaw = form.get("draft");
+  const itemsRaw = form.get("items");
+  const buyerRaw = form.get("buyer");
+  const refCode = form.get("refCode");
   const utr = form.get("utr");
   const screenshot = form.get("screenshot") as File | null;
 
-  if (typeof draftRaw !== "string" || typeof utr !== "string" || !utr.trim()) {
+  if (typeof itemsRaw !== "string" || typeof buyerRaw !== "string" || typeof utr !== "string" || !utr.trim()) {
     return NextResponse.json({ error: "Missing order details or UTR." }, { status: 400 });
   }
 
-  const draft = JSON.parse(draftRaw);
+  const items = JSON.parse(itemsRaw) as CartItem[];
+  const buyer = JSON.parse(buyerRaw) as BuyerDetails;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
+  }
+
+  // Every buyer field is mandatory, except hostel/room which only apply
+  // to non-day-scholars.
+  if (!buyer.name?.trim() || !buyer.mobile?.trim() || !buyer.idNumber?.trim() || !buyer.enrolmentNumber?.trim()) {
+    return NextResponse.json(
+      { error: "Name, mobile number, ID number, and enrolment number are all required." },
+      { status: 400 }
+    );
+  }
+  if (!buyer.dayScholar && (!buyer.hostelName?.trim() || !buyer.roomNumber?.trim())) {
+    return NextResponse.json(
+      { error: "Hostel name and room number are required unless you're a day scholar." },
+      { status: 400 }
+    );
+  }
 
   let screenshotUrl: string | null = null;
   if (screenshot && screenshot.size > 0) {
@@ -61,13 +84,14 @@ export async function POST(req: NextRequest) {
       .from("orders")
       .insert({
         order_code: orderCode,
-        buyer_name: draft.buyerName,
-        roll_no: draft.rollNo,
-        branch: draft.branch || null,
-        year: draft.year || null,
-        phone: draft.phone,
-        pickup_location: draft.pickupLocation,
-        ref_code: draft.refCode || null,
+        buyer_name: buyer.name,
+        mobile_number: buyer.mobile,
+        id_number: buyer.idNumber,
+        enrolment_number: buyer.enrolmentNumber,
+        day_scholar: buyer.dayScholar,
+        hostel_name: buyer.dayScholar ? null : buyer.hostelName,
+        room_number: buyer.dayScholar ? null : buyer.roomNumber,
+        ref_code: (typeof refCode === "string" && refCode) || null,
         utr: utr.trim(),
         screenshot_url: screenshotUrl,
       })
@@ -98,16 +122,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not create order." }, { status: 500 });
   }
 
-  const { error: itemError } = await supabase.from("order_items").insert({
-    order_id: order.id,
-    product_id: draft.productId,
-    size_id: draft.sizeId,
-    quantity: draft.quantity,
-    unit_price_paise: draft.unitPricePaise,
-  });
+  const { error: itemError } = await supabase.from("order_items").insert(
+    items.map((item) => ({
+      order_id: order!.id,
+      product_id: item.productId,
+      size_id: item.sizeId,
+      quantity: item.quantity,
+      unit_price_paise: item.unitPricePaise,
+    }))
+  );
 
   if (itemError) {
-    return NextResponse.json({ error: "Order created but item failed — contact admin." }, { status: 500 });
+    return NextResponse.json({ error: "Order created but items failed — contact admin." }, { status: 500 });
   }
 
   return NextResponse.json({ orderCode: usedOrderCode });

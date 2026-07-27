@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartBadge } from "@/components/CartBadge";
 
 export function SiteHeader() {
   return (
@@ -14,6 +15,7 @@ export function SiteHeader() {
           <Link href="/status" className="text-ink-soft hover:text-ink transition-colors">
             Track order
           </Link>
+          <CartBadge />
         </nav>
       </div>
     </header>

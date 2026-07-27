@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
-import { Gauge } from "@/components/Gauge";
 import { getProducts, getDropConfig, formatPrice } from "@/lib/data";
 import { Countdown } from "@/components/Countdown";
 import Image from "next/image";
@@ -46,18 +45,6 @@ export default async function CatalogPage() {
                   <span className="mono-num text-sm text-ink-soft">{formatPrice(p.price_paise)}</span>
                 </div>
                 <p className="text-sm text-ink-soft mb-5 max-w-md leading-relaxed">{p.description}</p>
-
-                <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4">
-                  {p.sizes.map((s) => (
-                    <Gauge
-                      key={s.id}
-                      count={s.commit_count}
-                      threshold={s.commit_threshold}
-                      status={s.status}
-                      label={`size ${s.size_label}`}
-                    />
-                  ))}
-                </div>
 
                 <Link
                   href={`/product/${p.id}`}

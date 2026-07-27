@@ -14,11 +14,12 @@ Vercel.
 2. **Run the schema.** Supabase dashboard → SQL Editor → New query → paste
    the contents of `supabase/schema.sql` → Run. This creates every table,
    the commit-count triggers, and the duplicate-UTR guard.
-3. **Create a storage bucket** named `payment-screenshots`, set to public
-   read (Storage → New bucket → toggle "Public").
+3. **Create two storage buckets**, both set to public read (Storage → New
+   bucket → toggle "Public"):
+   - `payment-screenshots` — buyer payment screenshots
+   - `product-images` — product photos and the payment QR code
 4. **Add your products.** Either via the Supabase Table Editor directly
-   (`products` and `product_sizes` tables), or ask me to build a quick
-   admin "add product" form if you'd rather not touch the dashboard.
+   (`products` and `product_sizes` tables), or from `/admin` → Products.
 5. **Set the real pre-order cutoff** in the `drop_config` table (it defaults
    to 14 days from whenever you ran the schema).
 6. **Copy `.env.example` to `.env.local`** and fill in:
@@ -31,8 +32,8 @@ Vercel.
    returns mock products so the site is previewable without Supabase
    connected. Each function has the real Supabase query commented directly
    above it — swap the body, nothing else changes.
-8. **Set your real UPI ID** in `src/app/checkout/page.tsx` (`UPI_ID` constant)
-   and drop in a real QR code image where the placeholder box is.
+8. **Set your UPI ID and QR code** from `/admin` → Payment settings — no code
+   edit needed.
 
 ## Running locally
 

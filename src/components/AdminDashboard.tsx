@@ -4,14 +4,18 @@ import { useEffect, useState, useCallback } from "react";
 import { OrderStatus } from "@/lib/types";
 import { formatPrice } from "@/lib/data";
 import { AdminProductForm } from "@/components/AdminProductForm";
+import { AdminPaymentSettings } from "@/components/AdminPaymentSettings";
 
 interface AdminOrder {
   id: string;
   order_code: string;
   buyer_name: string;
-  roll_no: string;
-  phone: string;
-  pickup_location: string;
+  mobile_number: string;
+  id_number: string;
+  enrolment_number: string;
+  day_scholar: boolean;
+  hostel_name: string | null;
+  room_number: string | null;
   status: OrderStatus;
   utr: string;
   screenshot_url: string | null;
@@ -100,6 +104,7 @@ export function AdminDashboard() {
     <main className="max-w-6xl mx-auto px-6 py-10">
       <h1 className="font-display font-medium text-2xl mb-8">Admin</h1>
 
+      <AdminPaymentSettings />
       <AdminProductForm />
 
       {/* Print summary = the actual print order */}
@@ -179,8 +184,9 @@ export function AdminDashboard() {
                 <div className="flex items-center gap-3">
                   <span className="mono-num">{o.order_code}</span>
                   <span>{o.buyer_name}</span>
-                  <span className="text-ink-soft">{o.roll_no}</span>
-                  <span className="text-ink-soft">{o.phone}</span>
+                  <span className="text-ink-soft">{o.id_number}</span>
+                  <span className="text-ink-soft">{o.enrolment_number}</span>
+                  <span className="text-ink-soft">{o.mobile_number}</span>
                 </div>
                 <span
                   className="text-xs uppercase tracking-wide px-2 py-0.5"
@@ -197,7 +203,9 @@ export function AdminDashboard() {
                     .join(", ")}{" "}
                   — {formatPrice(o.order_items.reduce((s, i) => s + i.unit_price_paise * i.quantity, 0))}
                 </span>
-                <span>pickup: {o.pickup_location}</span>
+                <span>
+                  {o.day_scholar ? "day scholar" : `${o.hostel_name} · room ${o.room_number}`}
+                </span>
               </div>
 
               <div className="flex items-center justify-between flex-wrap gap-2">

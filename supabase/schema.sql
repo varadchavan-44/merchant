@@ -6,6 +6,8 @@ create table drop_config (
   id int primary key default 1,
   cutoff_at timestamptz not null,
   extended boolean not null default false,
+  upi_id text,
+  qr_image_url text,
   constraint single_row check (id = 1)
 );
 insert into drop_config (id, cutoff_at) values (1, now() + interval '14 days');
@@ -44,11 +46,12 @@ create table orders (
   id uuid primary key default gen_random_uuid(),
   order_code text not null unique,     -- short human-readable code, e.g. MHT-2481
   buyer_name text not null,
-  roll_no text not null,
-  branch text,
-  year text,
-  phone text not null,
-  pickup_location text not null,
+  mobile_number text not null,
+  id_number text not null,             -- student ID card number
+  enrolment_number text not null,      -- VNIT enrolment number
+  day_scholar boolean not null default false,
+  hostel_name text,                    -- required unless day_scholar (enforced in the API route)
+  room_number text,                    -- required unless day_scholar (enforced in the API route)
   ref_code text references referrers(code),
   utr text not null unique,            -- hard duplicate-UTR guard at the DB level
   screenshot_url text,
@@ -130,10 +133,14 @@ create policy "public read sizes" on product_sizes for select using (true);
 create policy "public read config" on drop_config for select using (true);
 create policy "public read referrers" on referrers for select using (true);
 
-create policy "public can create orders" on orders for insert with check (true);
-create policy "buyer can read own order by code" on orders for select using (true);
-create policy "public can create order items" on order_items for insert with check (true);
-create policy "public read order items" on order_items for select using (true);
+-- orders and order_items intentionally have NO public policies below.
+-- Every place the app touches these tables (checkout submission, admin
+-- dashboard, order lookup) goes through the service-role key in a
+-- server-side API route, which bypasses RLS entirely. Granting the
+-- anon/public role select or insert here would let anyone holding the
+-- public NEXT_PUBLIC_SUPABASE_ANON_KEY (shipped in the browser bundle,
+-- not a secret) read or write every buyer's data directly via Supabase's
+-- REST API, with no password involved. Leave this section empty.
 
 -- NOTE: verify/reject/status-change/pickup-checkin must all happen through
 -- server-side API routes using the Supabase service role key, never the

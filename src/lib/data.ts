@@ -41,6 +41,8 @@ export async function getDropConfig(): Promise<DropConfig> {
   const fallback: DropConfig = {
     cutoff_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
     extended: false,
+    upi_id: null,
+    qr_image_url: null,
   };
   if (!supabase) return fallback;
 

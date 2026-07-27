@@ -10,7 +10,9 @@ interface OrderResult {
   order_code: string;
   status: OrderStatus;
   buyer_name: string;
-  pickup_location: string;
+  day_scholar: boolean;
+  hostel_name: string | null;
+  room_number: string | null;
 }
 
 function StatusInner() {
@@ -97,7 +99,9 @@ function StatusInner() {
         <div key={o.order_code} className="mb-10">
           <div className="flex items-baseline justify-between mb-6">
             <span className="mono-num text-lg">{o.order_code}</span>
-            <span className="text-sm text-ink-soft">{o.pickup_location}</span>
+            <span className="text-sm text-ink-soft">
+              {o.day_scholar ? "day scholar" : `${o.hostel_name} · room ${o.room_number}`}
+            </span>
           </div>
           <OrderStatusTracker status={o.status} />
         </div>
