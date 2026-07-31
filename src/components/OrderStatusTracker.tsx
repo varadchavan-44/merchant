@@ -14,10 +14,10 @@ export function OrderStatusTracker({ status }: { status: OrderStatus }) {
       status === "cancelled"
         ? "This order was cancelled."
         : status === "refund_pending"
-        ? "Size didn't reach threshold — refund in progress."
+        ? "This order is being refunded."
         : "Refunded.";
     return (
-      <div className="border p-4" style={{ borderColor: "var(--warn)", background: "var(--warn-soft)" }}>
+      <div className="rounded-md border p-4" style={{ borderColor: "var(--warn)", background: "var(--warn-soft)" }}>
         <p className="text-sm" style={{ color: "var(--warn)" }}>
           {copy}
         </p>
@@ -38,21 +38,21 @@ export function OrderStatusTracker({ status }: { status: OrderStatus }) {
               <div
                 className="w-2.5 h-2.5 rounded-full shrink-0"
                 style={{
-                  background: done || current ? "var(--ok)" : "var(--line)",
+                  background: done || current ? "var(--ok)" : "var(--border)",
                   outline: current ? "3px solid var(--ok-soft)" : "none",
                 }}
               />
               {i < STEPS.length - 1 && (
                 <div
                   className="w-px flex-1 my-1"
-                  style={{ background: done ? "var(--ok)" : "var(--line)", minHeight: "1.75rem" }}
+                  style={{ background: done ? "var(--ok)" : "var(--border)", minHeight: "1.75rem" }}
                 />
               )}
             </div>
             <div className="pb-6">
               <p
                 className="text-sm mono-num"
-                style={{ color: done || current ? "var(--ink)" : "var(--ink-soft)" }}
+                style={{ color: done || current ? "var(--ink)" : "var(--ink-muted)" }}
               >
                 {String(i + 1).padStart(2, "0")} — {s.label}
               </p>

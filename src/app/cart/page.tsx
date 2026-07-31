@@ -69,29 +69,29 @@ export default function CartPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
-      <main className="flex-1 max-w-2xl mx-auto px-6 py-12 w-full">
-        <h1 className="font-display font-medium text-2xl mb-8">Your cart</h1>
+      <main className="flex-1 max-w-2xl mx-auto px-6 py-16 w-full">
+        <h1 className="font-display font-medium text-3xl mb-10">Your cart</h1>
 
         {loaded && items.length === 0 && (
-          <p className="text-sm text-ink-soft">
+          <p className="text-sm text-ink-muted">
             Your cart is empty.{" "}
-            <Link href="/catalog" className="underline">
-              Browse the catalog.
+            <Link href="/" className="underline text-ink">
+              Continue shopping.
             </Link>
           </p>
         )}
 
         {items.length > 0 && (
           <>
-            <div className="border border-line divide-y divide-line mb-10">
+            <div className="border border-border divide-y divide-border mb-10">
               {items.map((item) => (
                 <div
                   key={`${item.productId}-${item.sizeId}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3"
+                  className="flex items-center justify-between gap-4 px-4 py-4"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm truncate">{item.productName}</p>
-                    <p className="text-xs text-ink-soft">size {item.sizeLabel}</p>
+                    <p className="text-xs text-ink-muted">size {item.sizeLabel}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -100,7 +100,7 @@ export default function CartPage() {
                         updateQuantity(item.productId, item.sizeId, item.quantity - 1);
                         refresh();
                       }}
-                      className="w-7 h-7 border border-line hover:border-line-strong flex items-center justify-center"
+                      className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
                     >
                       −
                     </button>
@@ -111,7 +111,7 @@ export default function CartPage() {
                         updateQuantity(item.productId, item.sizeId, Math.min(5, item.quantity + 1));
                         refresh();
                       }}
-                      className="w-7 h-7 border border-line hover:border-line-strong flex items-center justify-center"
+                      className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
                     >
                       +
                     </button>
@@ -125,45 +125,45 @@ export default function CartPage() {
                       removeFromCart(item.productId, item.sizeId);
                       refresh();
                     }}
-                    className="text-xs text-ink-soft hover:text-ink underline"
+                    className="text-xs text-ink-muted hover:text-ink underline"
                   >
                     Remove
                   </button>
                 </div>
               ))}
-              <div className="flex items-center justify-between px-4 py-3 mono-num">
-                <span className="text-sm font-sans">Total</span>
+              <div className="flex items-center justify-between px-4 py-4 mono-num">
+                <span className="text-sm font-body">Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
             </div>
 
             <form onSubmit={handleProceed} className="flex flex-col gap-6">
               <div>
-                <p className="text-xs uppercase tracking-wide text-ink-soft mb-3">Your details</p>
+                <p className="eyebrow mb-3">Your details</p>
                 <div className="grid sm:grid-cols-2 gap-3">
                   <input
                     placeholder="Full name"
                     value={buyer.name}
                     onChange={(e) => setBuyer({ ...buyer, name: e.target.value })}
-                    className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                    className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                   />
                   <input
                     placeholder="Mobile number"
                     value={buyer.mobile}
                     onChange={(e) => setBuyer({ ...buyer, mobile: e.target.value })}
-                    className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                    className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                   />
                   <input
                     placeholder="ID number"
                     value={buyer.idNumber}
                     onChange={(e) => setBuyer({ ...buyer, idNumber: e.target.value })}
-                    className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                    className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                   />
                   <input
                     placeholder="Enrolment number"
                     value={buyer.enrolmentNumber}
                     onChange={(e) => setBuyer({ ...buyer, enrolmentNumber: e.target.value })}
-                    className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                    className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                   />
                 </div>
               </div>
@@ -191,13 +191,13 @@ export default function CartPage() {
                       placeholder="Hostel name"
                       value={buyer.hostelName}
                       onChange={(e) => setBuyer({ ...buyer, hostelName: e.target.value })}
-                      className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                      className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                     />
                     <input
                       placeholder="Room number"
                       value={buyer.roomNumber}
                       onChange={(e) => setBuyer({ ...buyer, roomNumber: e.target.value })}
-                      className="border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+                      className="rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                     />
                   </div>
                 )}
@@ -211,9 +211,9 @@ export default function CartPage() {
 
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-ink text-paper text-sm font-medium hover:opacity-85 transition-opacity self-start"
+                className="px-6 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150 self-start"
               >
-                Continue to payment
+                Checkout
               </button>
             </form>
           </>

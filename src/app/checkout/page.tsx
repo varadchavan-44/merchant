@@ -39,18 +39,18 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <SiteHeader />
-        <main className="flex-1 max-w-md mx-auto px-6 py-20 w-full text-center">
-          <p className="text-xs uppercase tracking-wide text-ink-soft mb-3">Order submitted</p>
+        <main className="flex-1 max-w-md mx-auto px-6 py-24 w-full text-center">
+          <p className="eyebrow mb-3">Order confirmed</p>
           <p className="mono-num text-3xl mb-4">{orderCode}</p>
-          <p className="text-sm text-ink-soft leading-relaxed mb-8">
-            We&apos;ll verify your payment against this reference and update your
-            status. Save this order code — you&apos;ll need it to check progress.
+          <p className="text-sm text-ink-muted leading-relaxed mb-8">
+            We&apos;ll confirm your payment and update your status. Save this
+            order code — you&apos;ll need it to check progress.
           </p>
           <Link
             href={`/status?code=${orderCode}`}
-            className="inline-block px-5 py-2.5 bg-ink text-paper text-sm font-medium hover:opacity-85 transition-opacity"
+            className="inline-block px-5 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
           >
-            Track this order
+            Check order status
           </Link>
         </main>
       </div>
@@ -61,11 +61,11 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <SiteHeader />
-        <main className="flex-1 max-w-md mx-auto px-6 py-20 w-full text-center">
-          <p className="text-sm text-ink-soft">
+        <main className="flex-1 max-w-md mx-auto px-6 py-24 w-full text-center">
+          <p className="text-sm text-ink-muted">
             No order in progress.{" "}
-            <Link href="/catalog" className="underline">
-              Start from the catalog.
+            <Link href="/" className="underline text-ink">
+              Continue shopping.
             </Link>
           </p>
         </main>
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!utr.trim()) {
-      setError("Enter the UTR / reference number from your payment.");
+      setError("Enter the reference number from your payment.");
       return;
     }
     setSubmitting(true);
@@ -110,29 +110,29 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
-      <main className="flex-1 max-w-md mx-auto px-6 py-12 w-full">
-        <h1 className="font-display font-medium text-2xl mb-8">Pay by UPI</h1>
+      <main className="flex-1 max-w-md mx-auto px-6 py-16 w-full">
+        <h1 className="font-display font-medium text-3xl mb-10">Complete your payment</h1>
 
-        <div className="border border-line p-5 mb-8">
+        <div className="border border-border p-5 mb-10">
           {draft.items.map((item) => (
             <div
               key={`${item.productId}-${item.sizeId}`}
-              className="flex items-baseline justify-between text-sm mb-1"
+              className="flex items-baseline justify-between text-sm mb-2"
             >
               <span>{item.productName}</span>
-              <span className="text-ink-soft">
+              <span className="text-ink-muted mono-num">
                 size {item.sizeLabel} × {item.quantity}
               </span>
             </div>
           ))}
-          <div className="flex items-baseline justify-between mono-num text-lg mt-3 pt-3 border-t border-line">
-            <span className="text-sm font-sans">Total</span>
+          <div className="flex items-baseline justify-between mono-num text-lg mt-3 pt-3 border-t border-border">
+            <span className="text-sm font-body">Total</span>
             <span>{formatPrice(total)}</span>
           </div>
         </div>
 
-        <div className="text-center mb-8">
-          <div className="relative w-44 h-44 bg-paper-raised border border-line mx-auto mb-3 overflow-hidden">
+        <div className="text-center mb-10">
+          <div className="relative w-44 h-44 rounded-md bg-bg-raised border border-border mx-auto mb-3 overflow-hidden">
             {payConfig?.qr_image_url ? (
               <Image
                 src={payConfig.qr_image_url}
@@ -143,27 +143,23 @@ export default function CheckoutPage() {
               />
             ) : null}
           </div>
-          <p className="mono-num text-sm">{payConfig?.upi_id || "UPI ID not set up yet — contact the seller"}</p>
-          <p className="text-xs text-ink-soft mt-1">Scan or pay to this ID for the exact amount above.</p>
+          <p className="mono-num text-sm">{payConfig?.upi_id || "Payment details not set up yet — contact the seller"}</p>
+          <p className="text-xs text-ink-muted mt-1">Scan or pay to this ID for the exact amount above.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs uppercase tracking-wide text-ink-soft mb-1.5 block">
-              UPI reference / UTR number
-            </label>
+            <label className="eyebrow mb-1.5 block">Payment reference number</label>
             <input
               value={utr}
               onChange={(e) => setUtr(e.target.value)}
               placeholder="e.g. 402819XXXXXX"
-              className="w-full border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+              className="w-full rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
             />
           </div>
 
           <div>
-            <label className="text-xs uppercase tracking-wide text-ink-soft mb-1.5 block">
-              Payment screenshot
-            </label>
+            <label className="eyebrow mb-1.5 block">Payment screenshot</label>
             <input
               type="file"
               accept="image/*"
@@ -181,7 +177,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 px-5 py-2.5 bg-ink text-paper text-sm font-medium hover:opacity-85 transition-opacity disabled:opacity-50"
+            className="mt-2 px-5 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150 disabled:opacity-50"
           >
             {submitting ? "Submitting…" : "Submit order"}
           </button>

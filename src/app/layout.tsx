@@ -1,28 +1,24 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Cormorant_Garamond, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["500"],
+  fallback: ["Georgia", "serif"],
+});
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
   weight: ["400", "500"],
+  fallback: ["Helvetica Neue", "Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "Drop — VNIT Merch",
-  description: "Pre-order VNIT merch. Committed sizes get printed, nothing else.",
+  title: "Drop",
+  description: "A small drop of VNIT merch.",
 };
 
 export default function RootLayout({
@@ -30,9 +26,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${plexMono.variable} antialiased`}
-      >
+      <body className={`${cormorant.variable} ${spaceGrotesk.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -15,7 +15,7 @@ export function CartBadge() {
   }, []);
 
   return (
-    <Link href="/cart" className="text-ink-soft hover:text-ink transition-colors">
+    <Link href="/cart" className="text-ink-muted hover:text-ink transition-colors duration-150">
       Cart{count > 0 ? ` (${count})` : ""}
     </Link>
   );

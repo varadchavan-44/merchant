@@ -7,7 +7,13 @@ import { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/data";
 import { addToCart, cartCount, getCart } from "@/lib/cart";
 
-export function ProductOrderForm({ product }: { product: Product }) {
+export function ProductOrderForm({
+  product,
+  onAdded,
+}: {
+  product: Product;
+  onAdded?: () => void;
+}) {
   const searchParams = useSearchParams();
   const refCode = searchParams.get("ref") ?? undefined;
 
@@ -46,12 +52,13 @@ export function ProductOrderForm({ product }: { product: Product }) {
     setError("");
     setJustAdded(true);
     setCount(cartCount(getCart()));
+    onAdded?.();
   }
 
   return (
     <form onSubmit={handleAddToCart} className="flex flex-col gap-8">
       <div>
-        <p className="text-xs uppercase tracking-wide text-ink-soft mb-3">Size</p>
+        <p className="eyebrow mb-3">Size</p>
         <div className="flex flex-wrap gap-2">
           {product.sizes.map((s) => (
             <button
@@ -61,10 +68,10 @@ export function ProductOrderForm({ product }: { product: Product }) {
                 setSizeId(s.id);
                 setJustAdded(false);
               }}
-              className={`px-4 py-2 text-sm border transition-colors ${
+              className={`px-4 py-2 text-sm rounded-md border transition-colors duration-150 ${
                 sizeId === s.id
-                  ? "border-ink bg-ink text-paper"
-                  : "border-line hover:border-line-strong"
+                  ? "border-ink bg-ink text-on-ink"
+                  : "border-border hover:border-ink"
               }`}
             >
               {s.size_label}
@@ -74,7 +81,7 @@ export function ProductOrderForm({ product }: { product: Product }) {
       </div>
 
       <div>
-        <p className="text-xs uppercase tracking-wide text-ink-soft mb-3">Quantity</p>
+        <p className="eyebrow mb-3">Quantity</p>
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -82,7 +89,7 @@ export function ProductOrderForm({ product }: { product: Product }) {
               setQty((q) => Math.max(1, q - 1));
               setJustAdded(false);
             }}
-            className="w-8 h-8 border border-line hover:border-line-strong flex items-center justify-center"
+            className="w-8 h-8 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
           >
             −
           </button>
@@ -93,7 +100,7 @@ export function ProductOrderForm({ product }: { product: Product }) {
               setQty((q) => Math.min(5, q + 1));
               setJustAdded(false);
             }}
-            className="w-8 h-8 border border-line hover:border-line-strong flex items-center justify-center"
+            className="w-8 h-8 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
           >
             +
           </button>
@@ -106,22 +113,20 @@ export function ProductOrderForm({ product }: { product: Product }) {
         </p>
       )}
 
-      <div className="flex items-center justify-between pt-4 border-t border-line">
-        <span className="mono-num text-lg">
-          {formatPrice(product.price_paise * qty)}
-        </span>
+      <div className="flex items-center justify-between pt-4 border-t border-border">
+        <span className="mono-num text-lg">{formatPrice(product.price_paise * qty)}</span>
         <button
           type="submit"
-          className="px-6 py-2.5 bg-ink text-paper text-sm font-medium hover:opacity-85 transition-opacity"
+          className="px-6 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
         >
           Add to cart
         </button>
       </div>
 
       {justAdded && (
-        <p className="text-sm text-center">
+        <p className="text-sm text-center text-ink-muted">
           Added to cart.{" "}
-          <Link href="/cart" className="underline font-medium">
+          <Link href="/cart" className="underline font-medium text-ink">
             View cart ({count})
           </Link>
         </p>

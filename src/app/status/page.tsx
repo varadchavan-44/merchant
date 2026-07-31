@@ -49,20 +49,20 @@ function StatusInner() {
   }, []);
 
   return (
-    <main className="flex-1 max-w-md mx-auto px-6 py-12 w-full">
-      <h1 className="font-display font-medium text-2xl mb-8">Track order</h1>
+    <main className="flex-1 max-w-md mx-auto px-6 py-16 w-full">
+      <h1 className="font-display font-medium text-3xl mb-10">Order status</h1>
 
       <div className="flex gap-2 mb-4 text-sm">
         <button
           onClick={() => setMode("code")}
-          className={mode === "code" ? "font-medium border-b border-ink" : "text-ink-soft"}
+          className={mode === "code" ? "font-medium border-b border-ink" : "text-ink-muted"}
         >
           By order code
         </button>
-        <span className="text-ink-soft">/</span>
+        <span className="text-ink-muted">/</span>
         <button
           onClick={() => setMode("phone")}
-          className={mode === "phone" ? "font-medium border-b border-ink" : "text-ink-soft"}
+          className={mode === "phone" ? "font-medium border-b border-ink" : "text-ink-muted"}
         >
           By phone
         </button>
@@ -73,17 +73,17 @@ function StatusInner() {
           e.preventDefault();
           runLookup(query, mode);
         }}
-        className="flex gap-2 mb-10"
+        className="flex gap-2 mb-12"
       >
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={mode === "code" ? "MHT-2481" : "10-digit phone"}
-          className="flex-1 border border-line px-3 py-2 text-sm bg-paper-raised focus:outline-none focus:border-ink"
+          className="flex-1 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-ink text-paper text-sm font-medium hover:opacity-85 transition-opacity"
+          className="px-4 py-2 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
         >
           {loading ? "…" : "Look up"}
         </button>
@@ -99,7 +99,7 @@ function StatusInner() {
         <div key={o.order_code} className="mb-10">
           <div className="flex items-baseline justify-between mb-6">
             <span className="mono-num text-lg">{o.order_code}</span>
-            <span className="text-sm text-ink-soft">
+            <span className="text-sm text-ink-muted">
               {o.day_scholar ? "day scholar" : `${o.hostel_name} · room ${o.room_number}`}
             </span>
           </div>
