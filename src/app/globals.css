@@ -109,6 +109,13 @@ body {
   transform: translateY(0);
 }
 
+/* The collection should read as a continuous editorial sequence, not a grid. */
+@media (min-width: 1024px) {
+  .reveal {
+    transition-duration: 700ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;

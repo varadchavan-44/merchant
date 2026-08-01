@@ -61,9 +61,14 @@ export function HomeReveal({ products }: { products: Product[] }) {
   return (
     <>
       {products.length > 1 && (
-        <div className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 flex-col items-center gap-3 z-10">
+        <div className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 flex-col items-center gap-3 z-20" aria-label="Products in this drop">
           {products.map((p, i) => (
-            <span key={p.id} className="mono-num text-xs" style={{ color: i === activeIndex ? "var(--ink)" : "var(--ink-muted)" }}>
+            <span
+              key={p.id}
+              className="mono-num text-xs transition-colors duration-300"
+              style={{ color: i === activeIndex ? "var(--ink)" : "var(--ink-muted)" }}
+              aria-current={i === activeIndex ? "true" : undefined}
+            >
               {String(i + 1).padStart(2, "0")}
             </span>
           ))}
@@ -72,6 +77,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
 
       {products.map((product, index) => {
         const imageLeft = index % 2 === 0;
+        const itemNumber = String(index + 1).padStart(2, "0");
         return (
           <section
             key={product.id}
@@ -79,7 +85,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               sectionRefs.current[index] = el;
             }}
             data-index={index}
-            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-[90vh] lg:flex lg:items-stretch border-b border-border last:border-b-0`}
+            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-[92vh] lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
               {product.image_url && (
@@ -91,12 +97,17 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   className="object-cover"
                 />
               )}
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-ink mix-blend-difference">
+                <span className="eyebrow text-current">VNIT merch</span>
+                <span className="mono-num text-xs">{itemNumber} / {String(products.length).padStart(2, "0")}</span>
+              </div>
             </div>
 
             <div
               className={`hidden lg:flex lg:w-1/2 items-center ${imageLeft ? "lg:order-2" : "lg:order-1"}`}
             >
               <div className="max-w-md mx-auto px-10 py-16 w-full">
+                <p className="eyebrow mb-7">Drop item {itemNumber}</p>
                 <h2 className="font-display font-medium text-4xl leading-tight mb-3">{product.name}</h2>
                 <p className="mono-num text-lg text-ink-muted mb-4">{formatPrice(product.price_paise)}</p>
                 {product.description && (
@@ -108,8 +119,8 @@ export function HomeReveal({ products }: { products: Product[] }) {
               </div>
             </div>
 
-            {/* Mobile: full-bleed image is the section, bottom bar pinned to it */}
-            <div className="lg:hidden relative h-[92vh]">
+            {/* Mobile keeps the drop immersive; buying details stay one deliberate tap away. */}
+            <div className="lg:hidden relative h-[100svh] overflow-hidden bg-bg-raised">
               {product.image_url && (
                 <Image
                   src={product.image_url}
@@ -119,18 +130,28 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   className="object-cover"
                 />
               )}
-              <div className="sticky bottom-0 left-0 right-0 bg-bg-raised border-t border-border px-5 py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-body font-medium text-sm">{product.name}</p>
-                  <p className="mono-num text-sm text-ink-muted">{formatPrice(product.price_paise)}</p>
+              <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5 text-on-ink drop-shadow-sm">
+                <span className="eyebrow text-current">VNIT merch</span>
+                <span className="mono-num text-xs">{itemNumber} / {String(products.length).padStart(2, "0")}</span>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pt-20" aria-hidden="true" />
+              <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-ink">
+                {product.description && (
+                  <p className="text-xs leading-relaxed text-on-ink/85 mb-3 max-w-[32ch] line-clamp-2">{product.description}</p>
+                )}
+                <div className="border-t border-white/35 pt-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-body font-medium text-base">{product.name}</p>
+                    <p className="mono-num text-sm text-on-ink/75">{formatPrice(product.price_paise)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSheetProductId(product.id)}
+                    className="px-5 py-2.5 rounded-md bg-bg text-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
+                  >
+                    Shop
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSheetProductId(product.id)}
-                  className="px-5 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
-                >
-                  Shop
-                </button>
               </div>
             </div>
           </section>
