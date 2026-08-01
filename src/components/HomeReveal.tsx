@@ -85,7 +85,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               sectionRefs.current[index] = el;
             }}
             data-index={index}
-            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-[92vh] lg:flex lg:items-stretch border-b border-border last:border-b-0`}
+            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
               {product.image_url && (
@@ -98,18 +98,24 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-ink mix-blend-difference">
-                <span className="eyebrow text-current">VNIT merch</span>
-                <span className="mono-num text-xs">{itemNumber} / {String(products.length).padStart(2, "0")}</span>
+                <span className="eyebrow text-current">Drop / 2026</span>
+                <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
+              <p className="absolute bottom-7 left-8 max-w-[9ch] font-display text-[clamp(4rem,8vw,8rem)] leading-[0.72] tracking-[-0.065em] text-on-ink mix-blend-difference" aria-hidden="true">
+                {product.name}
+              </p>
             </div>
 
             <div
               className={`hidden lg:flex lg:w-1/2 items-center ${imageLeft ? "lg:order-2" : "lg:order-1"}`}
             >
               <div className="max-w-md mx-auto px-10 py-16 w-full">
-                <p className="eyebrow mb-7">Drop item {itemNumber}</p>
-                <h2 className="font-display font-medium text-4xl leading-tight mb-3">{product.name}</h2>
-                <p className="mono-num text-lg text-ink-muted mb-4">{formatPrice(product.price_paise)}</p>
+                <p className="eyebrow mb-8">Object {itemNumber} / The VNIT drop</p>
+                <h2 className="font-display font-medium text-[clamp(4rem,7vw,7.5rem)] leading-[0.76] tracking-[-0.07em] mb-6">{product.name}</h2>
+                <div className="flex items-baseline justify-between gap-4 border-y border-border py-4 mb-6">
+                  <p className="mono-num text-lg">{formatPrice(product.price_paise)}</p>
+                  <p className="eyebrow text-right">Limited campus issue</p>
+                </div>
                 {product.description && (
                   <p className="text-sm text-ink-muted leading-relaxed mb-8 max-w-sm">{product.description}</p>
                 )}
@@ -130,26 +136,28 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   className="object-cover"
                 />
               )}
-              <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5 text-on-ink drop-shadow-sm">
-                <span className="eyebrow text-current">VNIT merch</span>
-                <span className="mono-num text-xs">{itemNumber} / {String(products.length).padStart(2, "0")}</span>
+              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-ink mix-blend-difference">
+                <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pt-20" aria-hidden="true" />
+              <p className="absolute inset-x-4 top-[25%] max-w-[5ch] font-display text-[clamp(5.75rem,24vw,9rem)] leading-[0.68] tracking-[-0.08em] text-on-ink mix-blend-difference" aria-hidden="true">
+                {product.name}
+              </p>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
               <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-ink">
                 {product.description && (
                   <p className="text-xs leading-relaxed text-on-ink/85 mb-3 max-w-[32ch] line-clamp-2">{product.description}</p>
                 )}
-                <div className="border-t border-white/35 pt-4 flex items-center justify-between">
+                <div className="border-t border-white/45 pt-4 flex items-center justify-between">
                   <div>
-                    <p className="font-body font-medium text-base">{product.name}</p>
-                    <p className="mono-num text-sm text-on-ink/75">{formatPrice(product.price_paise)}</p>
+                    <p className="eyebrow text-on-ink/75 mb-1">Object {itemNumber}</p>
+                    <p className="mono-num text-base">{formatPrice(product.price_paise)}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSheetProductId(product.id)}
-                    className="px-5 py-2.5 rounded-md bg-bg text-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
+                    className="px-6 py-3 rounded-full bg-bg text-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
                   >
-                    Shop
+                    Claim yours
                   </button>
                 </div>
               </div>

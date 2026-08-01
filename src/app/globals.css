@@ -86,6 +86,12 @@ body {
   font-family: var(--font-body);
 }
 
+/* This is a collection site: imagery and type should share the frame. */
+::selection {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
 .mono-num {
   font-variant-numeric: tabular-nums;
 }

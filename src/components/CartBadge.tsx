@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cartCount, getCart } from "@/lib/cart";
 
-export function CartBadge() {
+export function CartBadge({ className = "text-ink-muted hover:text-ink" }: { className?: string }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export function CartBadge() {
   }, []);
 
   return (
-    <Link href="/cart" className="text-ink-muted hover:text-ink transition-colors duration-150">
+    <Link href="/cart" className={`${className} transition-colors duration-150`}>
       Cart{count > 0 ? ` (${count})` : ""}
     </Link>
   );

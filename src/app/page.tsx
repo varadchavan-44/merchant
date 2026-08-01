@@ -10,7 +10,7 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SiteHeader />
+      <SiteHeader overlay />
 
       <main className="flex-1">
         {products.length === 0 ? (
