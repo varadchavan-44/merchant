@@ -101,9 +101,6 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 <span className="eyebrow text-current">Drop / 2026</span>
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
-              <p className="absolute bottom-7 left-8 max-w-[9ch] font-display text-[clamp(4rem,8vw,8rem)] leading-[0.72] tracking-[-0.065em] text-on-ink mix-blend-difference" aria-hidden="true">
-                {product.name}
-              </p>
             </div>
 
             <div
@@ -111,7 +108,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
             >
               <div className="max-w-md mx-auto px-10 py-16 w-full">
                 <p className="eyebrow mb-8">Object {itemNumber} / The VNIT drop</p>
-                <h2 className="font-display font-medium text-[clamp(4rem,7vw,7.5rem)] leading-[0.76] tracking-[-0.07em] mb-6">{product.name}</h2>
+                <h2 className="font-display font-medium text-4xl leading-tight mb-6">{product.name}</h2>
                 <div className="flex items-baseline justify-between gap-4 border-y border-border py-4 mb-6">
                   <p className="mono-num text-lg">{formatPrice(product.price_paise)}</p>
                   <p className="eyebrow text-right">Limited campus issue</p>
@@ -139,9 +136,6 @@ export function HomeReveal({ products }: { products: Product[] }) {
               <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-ink mix-blend-difference">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
-              <p className="absolute inset-x-4 top-[25%] max-w-[5ch] font-display text-[clamp(5.75rem,24vw,9rem)] leading-[0.68] tracking-[-0.08em] text-on-ink mix-blend-difference" aria-hidden="true">
-                {product.name}
-              </p>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
               <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-ink">
                 {product.description && (
@@ -149,8 +143,8 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 )}
                 <div className="border-t border-white/45 pt-4 flex items-center justify-between">
                   <div>
-                    <p className="eyebrow text-on-ink/75 mb-1">Object {itemNumber}</p>
-                    <p className="mono-num text-base">{formatPrice(product.price_paise)}</p>
+                    <p className="font-body font-medium text-base mb-1">{product.name}</p>
+                    <p className="mono-num text-sm text-on-ink/75">{formatPrice(product.price_paise)}</p>
                   </div>
                   <button
                     type="button"
