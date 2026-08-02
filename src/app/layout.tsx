@@ -1,24 +1,13 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Space_Grotesk } from "next/font/google";
+import "@fontsource/dm-sans/400.css";
+import "@fontsource/dm-sans/500.css";
+import "@fontsource/dm-sans/600.css";
+import "@fontsource/dm-sans/700.css";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["500"],
-  fallback: ["Georgia", "serif"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  fallback: ["Helvetica Neue", "Arial", "sans-serif"],
-});
-
 export const metadata: Metadata = {
-  title: "Drop",
-  description: "A small drop of VNIT merch.",
+  title: "MerchNguys",
+  description: "MerchNguys — campus merch, commit-then-print.",
 };
 
 export default function RootLayout({
@@ -26,7 +15,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${cormorant.variable} ${spaceGrotesk.variable} antialiased`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>

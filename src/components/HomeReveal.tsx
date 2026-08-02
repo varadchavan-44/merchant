@@ -97,8 +97,9 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   className="object-cover"
                 />
               )}
-              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-ink mix-blend-difference">
-                <span className="eyebrow text-current">Drop / 2026</span>
+              <div className="photo-scrim-top" aria-hidden="true" />
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-ink">
+                <span className="eyebrow" style={{ color: "var(--accent)" }}>Drop / 2026</span>
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
             </div>
@@ -133,7 +134,8 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   className="object-cover"
                 />
               )}
-              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-ink mix-blend-difference">
+              <div className="photo-scrim-top" aria-hidden="true" />
+              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-ink">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
@@ -149,7 +151,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
                   <button
                     type="button"
                     onClick={() => setSheetProductId(product.id)}
-                    className="px-6 py-3 rounded-full bg-bg text-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
+                    className="px-6 py-3 rounded-full bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150"
                   >
                     Claim yours
                   </button>

@@ -44,7 +44,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="px-5 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
+            className="px-5 py-2.5 rounded-md bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150"
           >
             Shop
           </button>

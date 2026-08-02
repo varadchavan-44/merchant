@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /*
-  Design tokens — Drop, cream minimal luxury.
-  Quiet, confident, monochrome. The only "color" in the UI is the
-  product photography itself. Synced to prefers-color-scheme, no
-  manual toggle.
+  Design tokens — MerchNguys, bold streetwear.
+  One typeface (DM Sans) throughout. Monochrome base, one restrained
+  lime accent reserved for the drop cue and the primary purchase CTA
+  only — never decorative, never repeated on secondary controls.
+  Synced to prefers-color-scheme, no manual toggle.
 */
 
 :root {
@@ -15,14 +16,18 @@
   --border: #dad4c4;
   --on-ink: #f3efe6;
 
+  /* The one color pop: drop-live cue + primary CTA. Nothing else. */
+  --accent: #c6ff3d;
+  --accent-ink: #12130d;
+
   /* Reserved for order-status / error states only — never decorative. */
   --warn: #9a5b17;
   --warn-soft: #f6ead9;
   --ok: #2f6e51;
   --ok-soft: #e7f0ea;
 
-  --font-display: var(--font-cormorant);
-  --font-body: var(--font-space-grotesk);
+  --font-display: "DM Sans", Helvetica, Arial, sans-serif;
+  --font-body: "DM Sans", Helvetica, Arial, sans-serif;
 
   /* Legacy raw aliases for admin's inline var(--x) usage (untouched, out of scope). */
   --paper: var(--bg);
@@ -41,6 +46,10 @@
     --border: #2b2924;
     --on-ink: #161511;
 
+    /* Same lime in dark mode — a bold-streetwear system doesn't retint its one accent per theme. */
+    --accent: #c6ff3d;
+    --accent-ink: #12130d;
+
     --warn: #d99a5b;
     --warn-soft: #2e2418;
     --ok: #6fae8c;
@@ -55,6 +64,8 @@
   --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
   --color-on-ink: var(--on-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
   --color-ok: var(--ok);
@@ -128,6 +139,22 @@ body {
     transform: none;
     transition: none;
   }
+}
+
+/*
+  Fixed-contrast scrim for text/logo sitting on top of unpredictable product
+  photography (header overlay, hero item badges). Replaces the previous
+  mix-blend-difference approach, which went unreadable whenever the photo's
+  tone happened to match the ink color — the exact "name not rendering
+  properly on some screens" bug. A flat scrim is always readable regardless
+  of what's underneath.
+*/
+.photo-scrim-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 6rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+  pointer-events: none;
 }
 
 /* Mobile bottom sheet */

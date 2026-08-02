@@ -117,7 +117,7 @@ export function ProductOrderForm({
         <span className="mono-num text-lg">{formatPrice(product.price_paise * qty)}</span>
         <button
           type="submit"
-          className="px-6 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150"
+          className="px-6 py-2.5 rounded-md bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150"
         >
           Add to cart
         </button>
