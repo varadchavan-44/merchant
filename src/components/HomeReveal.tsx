@@ -85,7 +85,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               sectionRefs.current[index] = el;
             }}
             data-index={index}
-            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
+            className={`reveal snap-section ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
               {product.image_url && (
@@ -99,7 +99,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-photo">
-                <span className="eyebrow" style={{ color: "var(--accent)" }}>Drop / 2026</span>
+                <span className="eyebrow-badge">Drop I</span>
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
             </div>
@@ -135,7 +135,8 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-photo">
+              <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-20 text-on-photo">
+                <span className="eyebrow-badge">Drop I</span>
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />

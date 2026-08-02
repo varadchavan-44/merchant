@@ -126,6 +126,32 @@ body {
   color: var(--ink-muted);
 }
 
+/*
+  Solid chip instead of colored text-on-scrim: a badge with its own
+  background reads clearly no matter what's in the photo behind it,
+  where colored text against a gradient scrim was easy to miss.
+*/
+.eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent);
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+@media (min-width: 1024px) {
+  .eyebrow-badge {
+    font-size: 12px;
+    padding: 0.5rem 0.85rem;
+  }
+}
+
 /* Scroll-reveal, used per homepage product section. */
 .reveal {
   opacity: 0;
@@ -141,6 +167,32 @@ body {
 @media (min-width: 1024px) {
   .reveal {
     transition-duration: 700ms;
+  }
+}
+
+/*
+  Mobile: full-bleed product sections snap one-at-a-time like a reels
+  feed, with an ease-out-expo curve (the same shape Apple uses for
+  sheet/page transitions) instead of the flatter desktop ease-out.
+  Scoped to .snap-section / .site-footer, both homepage-only classes,
+  so this never touches scroll behavior on other pages.
+*/
+@media (max-width: 1023px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(0) scale(0.96);
+  }
+  .snap-section.reveal-in {
+    transform: translateY(0) scale(1);
+  }
+  .site-footer {
+    scroll-snap-align: end;
   }
 }
 
