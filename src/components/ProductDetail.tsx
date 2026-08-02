@@ -38,8 +38,8 @@ export function ProductDetail({ product }: { product: Product }) {
         )}
         <div className="sticky bottom-0 left-0 right-0 bg-bg-raised border-t border-border px-5 py-4 flex items-center justify-between">
           <div>
-            <p className="font-body font-medium text-sm">{product.name}</p>
-            <p className="mono-num text-sm text-ink-muted">{formatPrice(product.price_paise)}</p>
+            <p className="font-body font-medium text-base">{product.name}</p>
+            <p className="mono-num text-base text-ink-muted">{formatPrice(product.price_paise)}</p>
           </div>
           <button
             type="button"

@@ -98,7 +98,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-ink">
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-photo">
                 <span className="eyebrow" style={{ color: "var(--accent)" }}>Drop / 2026</span>
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
@@ -135,18 +135,18 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-ink">
+              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-photo">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
-              <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-ink">
+              <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-photo">
                 {product.description && (
-                  <p className="text-xs leading-relaxed text-on-ink/85 mb-3 max-w-[32ch] line-clamp-2">{product.description}</p>
+                  <p className="text-sm leading-relaxed text-on-photo/90 mb-3 max-w-[32ch] line-clamp-2">{product.description}</p>
                 )}
                 <div className="border-t border-white/45 pt-4 flex items-center justify-between">
                   <div>
                     <p className="font-body font-medium text-base mb-1">{product.name}</p>
-                    <p className="mono-num text-sm text-on-ink/75">{formatPrice(product.price_paise)}</p>
+                    <p className="mono-num text-base text-on-photo/85">{formatPrice(product.price_paise)}</p>
                   </div>
                   <button
                     type="button"

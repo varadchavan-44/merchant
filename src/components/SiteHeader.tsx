@@ -14,18 +14,20 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
 
       <div
         className={`relative max-w-6xl mx-auto px-6 py-5 flex items-center justify-between ${
-          overlay ? "text-on-ink" : "text-ink"
+          overlay ? "text-on-photo" : "text-ink"
         }`}
       >
         <Link href="/" className="flex items-center shrink-0">
           {overlay ? (
+            // Always fixed-light here — it's on a photo + dark scrim, not
+            // the theme surface, so it must not swap with the site theme.
             <Image
               src="/merchnguys-wordmark-dark.png"
               alt="MerchNguys"
               width={480}
               height={160}
               priority
-              className="h-8 w-auto"
+              className="h-9 sm:h-10 w-auto"
             />
           ) : (
             <>
@@ -35,7 +37,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
                 width={480}
                 height={160}
                 priority
-                className="h-8 w-auto dark:hidden"
+                className="h-9 sm:h-10 w-auto dark:hidden"
               />
               <Image
                 src="/merchnguys-wordmark-dark.png"
@@ -43,14 +45,14 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
                 width={480}
                 height={160}
                 priority
-                className="h-8 w-auto hidden dark:block"
+                className="h-9 sm:h-10 w-auto hidden dark:block"
               />
             </>
           )}
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <CartBadge
-            className={overlay ? "text-on-ink hover:opacity-80" : "text-ink-muted hover:text-ink"}
+            className={overlay ? "text-on-photo hover:opacity-80" : "text-ink-muted hover:text-ink"}
           />
           <Link
             href="/status"

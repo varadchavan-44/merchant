@@ -20,6 +20,16 @@
   --accent: #c6ff3d;
   --accent-ink: #12130d;
 
+  /*
+    Fixed — does NOT swap in dark mode. For text/logo sitting on top of
+    product photography + a dark scrim, which is always dark regardless
+    of the site's light/dark theme. Using the theme-swapping --on-ink
+    here was the actual cause of "text barely visible in dark mode on
+    phone" — in dark mode --on-ink flips to near-black, disappearing
+    against the equally-dark photo scrim.
+  */
+  --on-photo: #f8f6f0;
+
   /* Reserved for order-status / error states only — never decorative. */
   --warn: #9a5b17;
   --warn-soft: #f6ead9;
@@ -64,6 +74,7 @@
   --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
   --color-on-ink: var(--on-ink);
+  --color-on-photo: var(--on-photo);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-warn: var(--warn);
