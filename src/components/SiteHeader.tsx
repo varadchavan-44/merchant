@@ -27,7 +27,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
               width={480}
               height={160}
               priority
-              className="h-12 sm:h-14 w-auto"
+              className="h-14 sm:h-16 w-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]"
             />
           ) : (
             <>
@@ -37,7 +37,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
                 width={480}
                 height={160}
                 priority
-                className="h-12 sm:h-14 w-auto dark:hidden"
+                className="h-14 sm:h-16 w-auto dark:hidden"
               />
               <Image
                 src="/merchnguys-wordmark-dark.png"
@@ -45,7 +45,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
                 width={480}
                 height={160}
                 priority
-                className="h-12 sm:h-14 w-auto hidden dark:block"
+                className="h-14 sm:h-16 w-auto hidden dark:block"
               />
             </>
           )}

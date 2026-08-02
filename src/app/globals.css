@@ -126,32 +126,6 @@ body {
   color: var(--ink-muted);
 }
 
-/*
-  Solid chip instead of colored text-on-scrim: a badge with its own
-  background reads clearly no matter what's in the photo behind it,
-  where colored text against a gradient scrim was easy to miss.
-*/
-.eyebrow-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent-ink);
-  background: var(--accent);
-  padding: 0.4rem 0.7rem;
-  border-radius: 999px;
-  line-height: 1;
-}
-
-@media (min-width: 1024px) {
-  .eyebrow-badge {
-    font-size: 12px;
-    padding: 0.5rem 0.85rem;
-  }
-}
-
 /* Scroll-reveal, used per homepage product section. */
 .reveal {
   opacity: 0;
@@ -215,8 +189,8 @@ body {
 .photo-scrim-top {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 6rem;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+  height: 8rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.32) 55%, transparent);
   pointer-events: none;
 }
 

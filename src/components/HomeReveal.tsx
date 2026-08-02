@@ -98,8 +98,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-8 text-on-photo">
-                <span className="eyebrow-badge">Drop I</span>
+              <div className="absolute inset-x-0 top-0 flex items-start justify-end p-8 text-on-photo">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
             </div>
@@ -135,8 +134,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 />
               )}
               <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-20 text-on-photo">
-                <span className="eyebrow-badge">Drop I</span>
+              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-photo">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
