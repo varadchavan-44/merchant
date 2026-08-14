@@ -4,14 +4,14 @@ import { CartBadge } from "@/components/CartBadge";
 
 export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
   return (
-    <header className={overlay ? "absolute inset-x-0 top-0 z-30" : "border-b border-border"}>
-      {/*
-        Fixed dark scrim instead of mix-blend-difference: the wordmark stays
-        readable no matter what the underlying photo looks like, instead of
-        vanishing when the photo's tone happens to match the ink color.
-      */}
+    <header
+      className={
+        overlay
+          ? "fixed inset-x-0 top-0 z-30"
+          : "fixed inset-x-0 top-0 z-30 border-b border-border bg-background"
+      }
+    >
       {overlay && <div className="photo-scrim-top" aria-hidden="true" />}
-
       <div
         className={`relative max-w-6xl mx-auto px-6 py-5 flex items-end justify-between ${
           overlay ? "text-on-photo" : "text-ink"
@@ -19,8 +19,6 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
       >
         <Link href="/" className="flex items-end shrink-0">
           {overlay ? (
-            // Always fixed-light here — it's on a photo + dark scrim, not
-            // the theme surface, so it must not swap with the site theme.
             <Image
               src="/merchnguys-wordmark-dark.png"
               alt="MerchNguys"
