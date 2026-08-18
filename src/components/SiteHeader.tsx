@@ -8,7 +8,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
   // Header is always solid and always sticky — no scroll-hide, no
   // transparent-over-photo variant. One treatment everywhere.
   const baseClasses =
-    "sticky top-0 z-30 border-b border-border bg-background lg:fixed lg:inset-x-0 lg:top-0 lg:z-30";
+    "sticky top-0 z-30 border-b border-border bg-white dark:bg-zinc-950 lg:fixed lg:inset-x-0 lg:top-0 lg:z-30";
 
   if (compact) {
     return (
