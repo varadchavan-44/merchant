@@ -153,8 +153,13 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 {product.description && (
                   <p className="text-sm leading-relaxed text-ink-muted mt-3 max-w-[32ch]">{product.description}</p>
                 )}
-              </div>
+                </div>
             </div>
+          </section>
+        );
+      })}
+
+      <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
 
       <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
         {sheetProduct && (
