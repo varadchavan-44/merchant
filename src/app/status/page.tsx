@@ -50,7 +50,7 @@ function StatusInner() {
 
   return (
     <main className="flex-1 max-w-md mx-auto px-6 py-16 w-full">
-      <h1 className="font-display font-medium text-3xl mb-10">Order status</h1>
+      <h1 className="headline text-3xl mb-10">Order status</h1>
 
       <div className="flex gap-2 mb-4 text-sm">
         <button
@@ -113,7 +113,7 @@ function StatusInner() {
 export default function StatusPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <SiteHeader />
+      <SiteHeader compact />
       <Suspense fallback={null}>
         <StatusInner />
       </Suspense>
