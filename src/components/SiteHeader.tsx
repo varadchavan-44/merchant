@@ -16,8 +16,8 @@ export function SiteHeader({
   // mobile, fixed only from lg up) fixes both: no more overlap, and the
   // bar no longer eats screen real estate while scrolling on a phone.
   const baseClasses = overlay
-    ? "relative border-b border-border bg-background lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:border-b-0 lg:bg-transparent"
-    : "relative border-b border-border bg-background lg:fixed lg:inset-x-0 lg:top-0 lg:z-30";
+    ? "sticky top-0 z-30 border-b border-border bg-background lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:border-b-0 lg:bg-transparent"
+    : "sticky top-0 z-30 border-b border-border bg-background lg:fixed lg:inset-x-0 lg:top-0 lg:z-30";
 
   if (compact && !overlay) {
     return (
