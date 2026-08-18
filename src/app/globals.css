@@ -139,7 +139,13 @@ body {
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-
+/* Nav labels — headline font at small size, not body text, so "Cart" /
+   "Order status" read as designed UI, not incidental copy. */
+.nav-label {
+  font-family: var(--font-headline), var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
 /* Scroll-reveal, used per homepage product section. */
 .reveal {
   opacity: 0;
