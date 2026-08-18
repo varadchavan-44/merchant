@@ -32,7 +32,7 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       {/* Mobile: full-bleed image, fixed bottom bar, bottom-sheet buy flow */}
-      <div className="lg:hidden relative h-[92vh]">
+      <div className="lg:hidden relative aspect-[4/5] w-full">
         {product.image_url && (
           <Image src={product.image_url} alt={product.name} fill sizes="100vw" className="object-cover" priority />
         )}
