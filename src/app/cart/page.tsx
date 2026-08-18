@@ -68,9 +68,9 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SiteHeader />
+      <SiteHeader compact />
       <main className="flex-1 max-w-2xl mx-auto px-6 py-16 w-full">
-        <h1 className="font-display font-medium text-3xl mb-10">Your cart</h1>
+        <h1 className="headline text-3xl mb-10">Your cart</h1>
 
         {loaded && items.length === 0 && (
           <p className="text-sm text-ink-muted">
