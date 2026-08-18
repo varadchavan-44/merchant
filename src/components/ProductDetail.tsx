@@ -32,22 +32,30 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       {/* Mobile: full-bleed image, fixed bottom bar, bottom-sheet buy flow */}
-      <div className="lg:hidden relative aspect-[4/5] w-full">
-        {product.image_url && (
-          <Image src={product.image_url} alt={product.name} fill sizes="100vw" className="object-cover" priority />
-        )}
-        <div className="sticky bottom-0 left-0 right-0 bg-bg-raised border-t border-border px-5 py-4 flex items-center justify-between">
-          <div>
-            <p className="font-body font-medium text-base">{product.name}</p>
-            <p className="mono-num text-base text-ink-muted">{formatPrice(product.price_paise)}</p>
+{/* Mobile: IG-post image, caption block below, bottom-sheet buy flow */}
+      <div className="lg:hidden">
+        <div className="relative aspect-[4/5] w-full">
+          {product.image_url && (
+            <Image src={product.image_url} alt={product.name} fill sizes="100vw" className="object-cover" priority />
+          )}
+        </div>
+        <div className="border-t border-border px-5 py-4">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div className="min-w-0">
+              <p className="font-body font-medium text-base truncate">{product.name}</p>
+              <p className="mono-num text-base text-ink-muted">{formatPrice(product.price_paise)}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSheetOpen(true)}
+              className="px-5 py-2.5 rounded-md bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150 shrink-0"
+            >
+              Shop
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setSheetOpen(true)}
-            className="px-5 py-2.5 rounded-md bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150"
-          >
-            Shop
-          </button>
+          {product.description && (
+            <p className="text-sm text-ink-muted leading-relaxed">{product.description}</p>
+          )}
         </div>
       </div>
 
