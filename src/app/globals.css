@@ -17,8 +17,8 @@
   --on-ink: #f3efe6;
 
   /* The one color pop: drop-live cue + primary CTA. Nothing else. */
-  --accent: #c6ff3d;
-  --accent-ink: #12130d;
+  --accent: #2a3a4a;
+  --accent-ink: #f3efe6;
 
   /*
     Fixed — does NOT swap in dark mode. For text/logo sitting on top of
@@ -57,8 +57,9 @@
     --on-ink: #161511;
 
     /* Same lime in dark mode — a bold-streetwear system doesn't retint its one accent per theme. */
-    --accent: #c6ff3d;
-    --accent-ink: #12130d;
+    /* Same navy in dark mode — one accent, no per-theme retint. */
+    --accent: #2a3a4a;
+    --accent-ink: #f3efe6;
 
     --warn: #d99a5b;
     --warn-soft: #2e2418;
