@@ -146,29 +146,24 @@ body {
 }
 
 /*
-  Mobile: full-bleed product sections snap one-at-a-time like a reels
-  feed, with an ease-out-expo curve (the same shape Apple uses for
-  sheet/page transitions) instead of the flatter desktop ease-out.
-  Scoped to .snap-section / .site-footer, both homepage-only classes,
-  so this never touches scroll behavior on other pages.
+  Mobile: was a reels-style forced snap (one product locked full-screen
+  at a time). Now a continuous feed — sections just fade up into view
+  as they're scrolled past, same .reveal/.reveal-in curve as desktop,
+  no scroll-snap-type, nothing locking scroll position.
 */
-@media (max-width: 1023px) {
-  html {
-    scroll-snap-type: y mandatory;
-  }
-  .snap-section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
-    transform: translateY(0) scale(0.96);
-  }
-  .snap-section.reveal-in {
-    transform: translateY(0) scale(1);
-  }
-  .site-footer {
-    scroll-snap-align: end;
-  }
+
+/*
+  Persistent mobile purchase bar (the "taskbar"). Used to be baked into
+  each product section and fade in/out with that section's reveal
+  transition; now a single fixed bar that never leaves the screen and
+  just swaps its content to whichever product is active in the feed.
+*/
+.mobile-taskbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 30;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border);
 }
 
 @media (prefers-reduced-motion: reduce) {
