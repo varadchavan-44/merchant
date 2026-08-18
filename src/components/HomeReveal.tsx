@@ -57,6 +57,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
   }, [products.length]);
 
   const sheetProduct = products.find((p) => p.id === sheetProductId) ?? null;
+  const activeProduct = products[activeIndex] ?? null;
 
   return (
     <>
@@ -85,7 +86,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               sectionRefs.current[index] = el;
             }}
             data-index={index}
-            className={`reveal snap-section ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
+            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
               {product.image_url && (
@@ -122,8 +123,9 @@ export function HomeReveal({ products }: { products: Product[] }) {
               </div>
             </div>
 
-            {/* Mobile keeps the drop immersive; buying details stay one deliberate tap away. */}
-            {/* Mobile: IG-post image, caption block below, one deliberate tap to buy. */}
+            {/* Mobile: continuous feed. Image + caption per product; price and
+                the buy CTA live in the persistent bar below, not here, so
+                they no longer fade in/out with each section's reveal. */}
             <div className="lg:hidden bg-bg-raised">
               <div className="relative aspect-[4/5] w-full overflow-hidden">
                 {product.image_url && (
@@ -135,31 +137,44 @@ export function HomeReveal({ products }: { products: Product[] }) {
                     className="object-cover"
                   />
                 )}
+                <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5 text-on-photo">
+                  <p className="font-body font-medium text-base truncate">{product.name}</p>
+                  <span className="mono-num text-xs shrink-0">
+                    {itemNumber} — {String(products.length).padStart(2, "0")}
+                  </span>
+                </div>
+                <div className="photo-scrim-top" aria-hidden="true" />
               </div>
-              <div className="px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="font-body font-medium text-base mb-1 truncate">{product.name}</p>
-                    <p className="mono-num text-base text-ink-muted">{formatPrice(product.price_paise)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSheetProductId(product.id)}
-                    className="px-6 py-3 rounded-full bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150 shrink-0"
-                  >
-                    Claim yours
-                  </button>
+              {product.description && (
+                <div className="px-5 pt-4 pb-6">
+                  <p className="text-sm leading-relaxed text-ink-muted max-w-[32ch]">{product.description}</p>
                 </div>
-                {product.description && (
-                  <p className="text-sm leading-relaxed text-ink-muted mt-3 max-w-[32ch]">{product.description}</p>
-                )}
-                </div>
+              )}
             </div>
           </section>
         );
-      
-
       })}
+
+      {/* Spacer so the fixed taskbar never covers the last section / footer. */}
+      <div className="lg:hidden h-24" aria-hidden="true" />
+
+      {activeProduct && (
+        <div className="mobile-taskbar lg:hidden">
+          <div className="px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-body font-medium text-base mb-1 truncate">{activeProduct.name}</p>
+              <p className="mono-num text-base text-ink-muted">{formatPrice(activeProduct.price_paise)}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSheetProductId(activeProduct.id)}
+              className="px-6 py-3 rounded-full bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150 shrink-0"
+            >
+              Claim yours
+            </button>
+          </div>
+        </div>
+      )}
 
       <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
       {sheetProduct && (
