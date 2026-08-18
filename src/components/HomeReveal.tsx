@@ -86,7 +86,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
               sectionRefs.current[index] = el;
             }}
             data-index={index}
-            className={`reveal ${visible[index] ? "reveal-in" : ""} min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
+            className={`reveal ${visible[index] ? "reveal-in" : ""} lg:min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
               {product.image_url && (
