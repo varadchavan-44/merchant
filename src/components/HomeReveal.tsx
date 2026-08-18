@@ -157,13 +157,13 @@ export function HomeReveal({ products }: { products: Product[] }) {
             </div>
           </section>
         );
+      
+
       })}
 
       <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
-
-      <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
-        {sheetProduct && (
-          <div>
+      {sheetProduct && (
+        <div>
             <h2 className="font-display font-medium text-2xl mb-1">{sheetProduct.name}</h2>
             {sheetProduct.description && (
               <p className="text-sm text-ink-muted leading-relaxed mb-6">{sheetProduct.description}</p>
