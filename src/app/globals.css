@@ -127,6 +127,19 @@ body {
   color: var(--ink-muted);
 }
 
+/*
+  Page-title treatment. --font-display and --font-body both resolve to
+  DM Sans, so "font-display" classes never actually read as a second
+  typeface — headings and body copy were visually identical. This pulls
+  in Space Grotesk (set as --font-headline in layout.tsx) so page titles
+  read as considered typography instead of "the same font, just bigger."
+*/
+.headline {
+  font-family: var(--font-headline), var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
 /* Scroll-reveal, used per homepage product section. */
 .reveal {
   opacity: 0;
