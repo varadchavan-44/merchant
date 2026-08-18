@@ -123,43 +123,38 @@ export function HomeReveal({ products }: { products: Product[] }) {
             </div>
 
             {/* Mobile keeps the drop immersive; buying details stay one deliberate tap away. */}
-            <div className="lg:hidden relative h-[100svh] overflow-hidden bg-bg-raised">
-              {product.image_url && (
-                <Image
-                  src={product.image_url}
-                  alt={product.name}
-                  fill
-                  sizes="100vw"
-                  className="object-cover"
-                />
-              )}
-              <div className="photo-scrim-top" aria-hidden="true" />
-              <div className="absolute inset-x-0 top-0 flex items-center justify-end px-5 pt-20 text-on-photo">
-                <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
-              </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-20" aria-hidden="true" />
-              <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-on-photo">
-                {product.description && (
-                  <p className="text-sm leading-relaxed text-on-photo/90 mb-3 max-w-[32ch] line-clamp-2">{product.description}</p>
+            {/* Mobile: IG-post image, caption block below, one deliberate tap to buy. */}
+            <div className="lg:hidden bg-bg-raised">
+              <div className="relative aspect-[4/5] w-full overflow-hidden">
+                {product.image_url && (
+                  <Image
+                    src={product.image_url}
+                    alt={product.name}
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                  />
                 )}
-                <div className="border-t border-white/45 pt-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-body font-medium text-base mb-1">{product.name}</p>
-                    <p className="mono-num text-base text-on-photo/85">{formatPrice(product.price_paise)}</p>
+              </div>
+              <div className="px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-body font-medium text-base mb-1 truncate">{product.name}</p>
+                    <p className="mono-num text-base text-ink-muted">{formatPrice(product.price_paise)}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSheetProductId(product.id)}
-                    className="px-6 py-3 rounded-full bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150"
+                    className="px-6 py-3 rounded-full bg-accent text-accent-ink text-sm font-semibold hover:opacity-85 transition-opacity duration-150 shrink-0"
                   >
                     Claim yours
                   </button>
                 </div>
+                {product.description && (
+                  <p className="text-sm leading-relaxed text-ink-muted mt-3 max-w-[32ch]">{product.description}</p>
+                )}
               </div>
             </div>
-          </section>
-        );
-      })}
 
       <BottomSheet open={sheetProduct !== null} onClose={() => setSheetProductId(null)}>
         {sheetProduct && (
