@@ -87,3 +87,32 @@
   background: #ffffff !important;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
+
+/* 8. Rounded direction. Product photography goes from full-bleed to an
+      inset card: padding on the (already relatively-positioned) image
+      containers pulls the absolutely-positioned <Image fill> and the
+      scrim in from the edge — both use inset:0, which resolves against
+      the padding box, so they follow automatically — then the image
+      itself gets the actual radius. CTAs, the mobile taskbar, and the
+      bottom sheet pick up the same radius scale for one consistent
+      language instead of a mix of sharp/pill/12px. */
+.pv-root img.object-cover {
+  border-radius: 1.25rem;
+}
+.pv-root [class*="lg:w-1/2"][class*="relative"],
+.pv-root [class*="h-screen"][class*="sticky"] {
+  padding: 1rem;
+}
+.pv-root [class*="aspect-[4/5]"] {
+  padding: 0.625rem;
+}
+
+.pv-root .mobile-taskbar {
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+.pv-root .sheet-panel {
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+.pv-root .rounded-md.bg-accent {
+  border-radius: 9999px;
+}
