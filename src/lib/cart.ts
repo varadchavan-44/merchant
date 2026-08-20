@@ -25,34 +25,43 @@ function saveCart(items: CartItem[]) {
   notify();
 }
 
-// Adding the same product+size again merges into the existing line
-// instead of creating a duplicate row.
-export function addToCart(item: CartItem) {
+function newLineId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `line_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+// Adding the same product+size again merges into the existing line —
+// UNLESS the item carries per-unit customizations, in which case each
+// "add to cart" click becomes its own line, since merging would blur
+// which name/number belongs to which unit.
+export function addToCart(item: Omit<CartItem, "lineId">) {
   const items = getCart();
-  const existing = items.find(
-    (i) => i.productId === item.productId && i.sizeId === item.sizeId
-  );
-  if (existing) {
-    existing.quantity += item.quantity;
-  } else {
-    items.push(item);
+
+  if (!item.customizations) {
+    const existing = items.find(
+      (i) => !i.customizations && i.productId === item.productId && i.sizeId === item.sizeId
+    );
+    if (existing) {
+      existing.quantity += item.quantity;
+      saveCart(items);
+      return;
+    }
   }
+
+  items.push({ ...item, lineId: newLineId() });
   saveCart(items);
 }
 
-export function updateQuantity(productId: string, sizeId: string, quantity: number) {
+export function updateQuantity(lineId: string, quantity: number) {
   const items = getCart()
-    .map((i) =>
-      i.productId === productId && i.sizeId === sizeId ? { ...i, quantity } : i
-    )
+    .map((i) => (i.lineId === lineId ? { ...i, quantity } : i))
     .filter((i) => i.quantity > 0);
   saveCart(items);
 }
 
-export function removeFromCart(productId: string, sizeId: string) {
-  const items = getCart().filter(
-    (i) => !(i.productId === productId && i.sizeId === sizeId)
-  );
+export function removeFromCart(lineId: string) {
+  const items = getCart().filter((i) => i.lineId !== lineId);
   saveCart(items);
 }
 

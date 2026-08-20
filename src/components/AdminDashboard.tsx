@@ -25,6 +25,8 @@ interface AdminOrder {
     id: string;
     quantity: number;
     unit_price_paise: number;
+    custom_name: string | null;
+    custom_number: string | null;
     products: { name: string } | null;
     product_sizes: { size_label: string } | null;
   }[];
@@ -199,7 +201,11 @@ export function AdminDashboard() {
               <div className="flex items-center justify-between flex-wrap gap-2 text-ink-soft text-xs">
                 <span>
                   {o.order_items
-                    .map((i) => `${i.products?.name} (${i.product_sizes?.size_label}) ×${i.quantity}`)
+                    .map(
+                      (i) =>
+                        `${i.products?.name} (${i.product_sizes?.size_label}) ×${i.quantity}` +
+                        (i.custom_name ? ` [${i.custom_name} #${i.custom_number}]` : "")
+                    )
                     .join(", ")}{" "}
                   — {formatPrice(o.order_items.reduce((s, i) => s + i.unit_price_paise * i.quantity, 0))}
                 </span>

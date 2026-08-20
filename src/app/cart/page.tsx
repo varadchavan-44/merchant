@@ -84,53 +84,62 @@ export default function CartPage() {
         {items.length > 0 && (
           <>
             <div className="border border-border divide-y divide-border mb-10">
-              {items.map((item) => (
-                <div
-                  key={`${item.productId}-${item.sizeId}`}
-                  className="flex items-center justify-between gap-4 px-4 py-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">{item.productName}</p>
-                    <p className="text-xs text-ink-muted">size {item.sizeLabel}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
+              {items.map((item) => {
+                const customized = !!item.customizations && item.customizations.length > 0;
+                return (
+                  <div key={item.lineId} className="flex items-center justify-between gap-4 px-4 py-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate">{item.productName}</p>
+                      <p className="text-xs text-ink-muted">size {item.sizeLabel}</p>
+                      {customized && (
+                        <p className="text-xs text-ink-muted mt-1">
+                          {item.customizations!.map((c) => `${c.name} #${c.number}`).join(", ")}
+                        </p>
+                      )}
+                    </div>
+                    {customized ? (
+                      <span className="mono-num text-sm text-ink-muted">×{item.quantity}</span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateQuantity(item.lineId, item.quantity - 1);
+                            refresh();
+                          }}
+                          className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
+                        >
+                          −
+                        </button>
+                        <span className="mono-num w-5 text-center text-sm">{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateQuantity(item.lineId, Math.min(5, item.quantity + 1));
+                            refresh();
+                          }}
+                          className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                    <span className="mono-num text-sm w-20 text-right">
+                      {formatPrice(item.unitPricePaise * item.quantity)}
+                    </span>
                     <button
                       type="button"
                       onClick={() => {
-                        updateQuantity(item.productId, item.sizeId, item.quantity - 1);
+                        removeFromCart(item.lineId);
                         refresh();
                       }}
-                      className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
+                      className="text-xs text-ink-muted hover:text-ink underline"
                     >
-                      −
-                    </button>
-                    <span className="mono-num w-5 text-center text-sm">{item.quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        updateQuantity(item.productId, item.sizeId, Math.min(5, item.quantity + 1));
-                        refresh();
-                      }}
-                      className="w-7 h-7 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
-                    >
-                      +
+                      Remove
                     </button>
                   </div>
-                  <span className="mono-num text-sm w-20 text-right">
-                    {formatPrice(item.unitPricePaise * item.quantity)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      removeFromCart(item.productId, item.sizeId);
-                      refresh();
-                    }}
-                    className="text-xs text-ink-muted hover:text-ink underline"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
+                );
+              })}
               <div className="flex items-center justify-between px-4 py-4 mono-num">
                 <span className="text-sm font-body">Total</span>
                 <span>{formatPrice(total)}</span>

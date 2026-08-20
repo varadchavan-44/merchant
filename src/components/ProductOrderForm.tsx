@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Product } from "@/lib/types";
+import { Product, UnitCustomization } from "@/lib/types";
 import { formatPrice } from "@/lib/data";
 import { addToCart, cartCount, getCart } from "@/lib/cart";
+
+const EMPTY_UNIT: UnitCustomization = { name: "", number: "" };
 
 export function ProductOrderForm({
   product,
@@ -19,6 +21,7 @@ export function ProductOrderForm({
 
   const [sizeId, setSizeId] = useState(product.sizes[0]?.id ?? "");
   const [qty, setQty] = useState(1);
+  const [units, setUnits] = useState<UnitCustomization[]>([{ ...EMPTY_UNIT }]);
   const [error, setError] = useState("");
   const [justAdded, setJustAdded] = useState(false);
   const [count, setCount] = useState(0);
@@ -35,12 +38,42 @@ export function ProductOrderForm({
     setCount(cartCount(getCart()));
   }, []);
 
+  function setQuantity(next: number) {
+    const clamped = Math.max(1, Math.min(5, next));
+    setQty(clamped);
+    if (product.is_customizable) {
+      setUnits((prev) => {
+        if (prev.length === clamped) return prev;
+        if (prev.length < clamped) {
+          return [...prev, ...Array(clamped - prev.length).fill(null).map(() => ({ ...EMPTY_UNIT }))];
+        }
+        return prev.slice(0, clamped);
+      });
+    }
+    setJustAdded(false);
+  }
+
+  function updateUnit(index: number, field: keyof UnitCustomization, value: string) {
+    setUnits((rows) => rows.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
+  }
+
   function handleAddToCart(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedSize) {
       setError("Pick a size.");
       return;
     }
+
+    let customizations: UnitCustomization[] | undefined;
+    if (product.is_customizable) {
+      const trimmed = units.slice(0, qty).map((u) => ({ name: u.name.trim(), number: u.number.trim() }));
+      if (trimmed.some((u) => !u.name || !u.number)) {
+        setError("Enter a name and number for every shirt.");
+        return;
+      }
+      customizations = trimmed;
+    }
+
     addToCart({
       productId: product.id,
       productName: product.name,
@@ -48,6 +81,7 @@ export function ProductOrderForm({
       sizeLabel: selectedSize.size_label,
       quantity: qty,
       unitPricePaise: product.price_paise,
+      customizations,
     });
     setError("");
     setJustAdded(true);
@@ -85,10 +119,7 @@ export function ProductOrderForm({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => {
-              setQty((q) => Math.max(1, q - 1));
-              setJustAdded(false);
-            }}
+            onClick={() => setQuantity(qty - 1)}
             className="w-8 h-8 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
           >
             −
@@ -96,16 +127,39 @@ export function ProductOrderForm({
           <span className="mono-num w-6 text-center">{qty}</span>
           <button
             type="button"
-            onClick={() => {
-              setQty((q) => Math.min(5, q + 1));
-              setJustAdded(false);
-            }}
+            onClick={() => setQuantity(qty + 1)}
             className="w-8 h-8 rounded-md border border-border hover:border-ink transition-colors duration-150 flex items-center justify-center"
           >
             +
           </button>
         </div>
       </div>
+
+      {product.is_customizable && (
+        <div>
+          <p className="eyebrow mb-3">Name &amp; number to print</p>
+          <div className="flex flex-col gap-3">
+            {units.slice(0, qty).map((unit, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {qty > 1 && <span className="text-xs text-ink-muted w-6 shrink-0">#{i + 1}</span>}
+                <input
+                  value={unit.name}
+                  onChange={(e) => updateUnit(i, "name", e.target.value)}
+                  placeholder="Name"
+                  className="flex-1 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
+                />
+                <input
+                  value={unit.number}
+                  onChange={(e) => updateUnit(i, "number", e.target.value)}
+                  placeholder="Number"
+                  inputMode="numeric"
+                  className="w-24 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised mono-num focus:outline-none focus:border-ink transition-colors duration-150"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <p className="text-sm" style={{ color: "var(--warn)" }}>

@@ -10,7 +10,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, sizes:product_sizes(*)")
+    .select("*, sizes:product_sizes(*), images:product_images(*)")
     .order("sort_order");
 
   if (error) return NextResponse.json({ error: "Fetch failed." }, { status: 500 });
@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
   const pricePaiseRaw = form.get("price_paise");
   const sizesRaw = form.get("sizes"); // JSON string: [{ size_label, commit_threshold }, ...]
   const image = form.get("image") as File | null;
+  const images = form.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  const isCustomizableRaw = form.get("is_customizable");
+
+  if (images.length > 6) {
+    return NextResponse.json({ error: "Up to 6 images per product." }, { status: 400 });
+  }
 
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Product name is required." }, { status: 400 });
@@ -67,13 +73,26 @@ export async function POST(req: NextRequest) {
     imageUrl = pub.publicUrl;
   }
 
+  const galleryUrls: string[] = [];
+  for (const img of images) {
+    const safeName = img.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, img);
+    if (uploadError) {
+      return NextResponse.json({ error: `Image upload failed: ${uploadError.message}` }, { status: 500 });
+    }
+    const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+    galleryUrls.push(pub.publicUrl);
+  }
+
   const { data: product, error: productError } = await supabase
     .from("products")
     .insert({
       name: name.trim(),
       description: typeof description === "string" ? description.trim() : "",
-      image_url: imageUrl,
+      image_url: imageUrl || galleryUrls[0] || "",
       price_paise: Math.round(Number(pricePaiseRaw)),
+      is_customizable: isCustomizableRaw === "true",
     })
     .select()
     .single();
@@ -94,6 +113,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Product created but sizes failed — check the product in Supabase and add sizes manually." },
       { status: 500 }
+    );
+  }
+
+  if (galleryUrls.length > 0) {
+    await supabase.from("product_images").insert(
+      galleryUrls.map((url, i) => ({ product_id: product.id, url, sort_order: i }))
     );
   }
 

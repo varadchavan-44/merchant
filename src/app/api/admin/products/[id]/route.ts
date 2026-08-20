@@ -16,6 +16,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const sizesRaw = form.get("sizes"); // JSON string: [{ id?, size_label, commit_threshold }, ...]
   const image = form.get("image") as File | null;
   const activeRaw = form.get("active");
+  const newImages = form.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  const keepImageIdsRaw = form.get("keep_image_ids"); // JSON string array of existing product_images.id to retain
+  const isCustomizableRaw = form.get("is_customizable");
 
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Product name is required." }, { status: 400 });
@@ -48,6 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     price_paise: number;
     image_url?: string;
     active?: boolean;
+    is_customizable?: boolean;
   } = {
     name: name.trim(),
     description: typeof description === "string" ? description.trim() : "",
@@ -56,6 +60,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   if (typeof activeRaw === "string") {
     update.active = activeRaw === "true";
+  }
+  if (typeof isCustomizableRaw === "string") {
+    update.is_customizable = isCustomizableRaw === "true";
   }
 
   if (image && image.size > 0) {
@@ -67,6 +74,54 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
     const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
     update.image_url = pub.publicUrl;
+  }
+
+  // Gallery: delete rows the admin removed, add newly uploaded ones.
+  // keep_image_ids omitted entirely means "don't touch the gallery" —
+  // this route is also called from the quick active/inactive toggle,
+  // which doesn't resend the gallery state.
+  if (newImages.length > 6) {
+    return NextResponse.json({ error: "Up to 6 images per product." }, { status: 400 });
+  }
+  if (typeof keepImageIdsRaw === "string") {
+    let keepIds: string[] = [];
+    try {
+      keepIds = JSON.parse(keepImageIdsRaw);
+    } catch {
+      return NextResponse.json({ error: "Malformed image list." }, { status: 400 });
+    }
+    const { data: currentImages } = await supabase
+      .from("product_images")
+      .select("id")
+      .eq("product_id", id);
+    const toDeleteImages = (currentImages ?? [])
+      .map((r) => r.id as string)
+      .filter((imgId) => !keepIds.includes(imgId));
+    if (toDeleteImages.length > 0) {
+      await supabase.from("product_images").delete().in("id", toDeleteImages);
+    }
+  }
+
+  if (newImages.length > 0) {
+    const { data: currentCount } = await supabase
+      .from("product_images")
+      .select("sort_order")
+      .eq("product_id", id)
+      .order("sort_order", { ascending: false })
+      .limit(1);
+    let nextSort = (currentCount?.[0]?.sort_order ?? -1) + 1;
+
+    for (const img of newImages) {
+      const safeName = img.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+      const { error: uploadError } = await supabase.storage.from("product-images").upload(path, img);
+      if (uploadError) {
+        return NextResponse.json({ error: `Image upload failed: ${uploadError.message}` }, { status: 500 });
+      }
+      const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+      await supabase.from("product_images").insert({ product_id: id, url: pub.publicUrl, sort_order: nextSort });
+      nextSort += 1;
+    }
   }
 
   const { error: productError } = await supabase.from("products").update(update).eq("id", id);
