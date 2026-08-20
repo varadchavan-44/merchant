@@ -177,21 +177,26 @@ export function AdminProductForm() {
     const url = isEditing ? `/api/admin/products/${mode}` : "/api/admin/products";
     const method = isEditing ? "PATCH" : "POST";
 
-    const res = await fetch(url, { method, body: form });
-    const data = await res.json();
-    setSubmitting(false);
+    try {
+      const res = await fetch(url, { method, body: form });
+      const data = await res.json();
+      setSubmitting(false);
 
-    if (!res.ok) {
-      setError(data.error ?? "Could not save product.");
-      return;
+      if (!res.ok) {
+        setError(data.error ?? "Could not save product.");
+        return;
+      }
+
+      if (data.warnings?.length) {
+        setRowNotice((n) => ({ ...n, [mode as string]: data.warnings.join(" ") }));
+      }
+
+      closeForm();
+      loadProducts();
+    } catch {
+      setSubmitting(false);
+      setError("Save failed or timed out — check your connection and try again with fewer/smaller photos.");
     }
-
-    if (data.warnings?.length) {
-      setRowNotice((n) => ({ ...n, [mode as string]: data.warnings.join(" ") }));
-    }
-
-    closeForm();
-    loadProducts();
   }
 
   async function handleDelete(p: AdminProduct) {
