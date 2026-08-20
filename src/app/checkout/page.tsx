@@ -6,6 +6,7 @@ import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { formatPrice } from "@/lib/data";
 import { BuyerDetails, CartItem } from "@/lib/types";
+import { compressImage } from "@/lib/image-compression";
 
 interface CheckoutDraft {
   items: CartItem[];
@@ -18,6 +19,7 @@ export default function CheckoutPage() {
   const [payConfig, setPayConfig] = useState<{ upi_id: string | null; qr_image_url: string | null } | null>(null);
   const [utr, setUtr] = useState("");
   const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [compressingScreenshot, setCompressingScreenshot] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [orderCode, setOrderCode] = useState("");
@@ -171,9 +173,23 @@ export default function CheckoutPage() {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setScreenshot(e.target.files?.[0] ?? null)}
-              className="w-full text-sm"
+              disabled={compressingScreenshot}
+              onChange={async (e) => {
+                const file = e.target.files?.[0] ?? null;
+                if (!file) {
+                  setScreenshot(null);
+                  return;
+                }
+                setCompressingScreenshot(true);
+                try {
+                  setScreenshot(await compressImage(file));
+                } finally {
+                  setCompressingScreenshot(false);
+                }
+              }}
+              className="w-full text-sm disabled:opacity-50"
             />
+            {compressingScreenshot && <p className="text-xs text-ink-muted mt-1">Compressing…</p>}
           </div>
 
           {error && (
@@ -184,7 +200,7 @@ export default function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || compressingScreenshot}
             className="mt-2 px-5 py-2.5 rounded-md bg-ink text-on-ink text-sm font-medium hover:opacity-85 transition-opacity duration-150 disabled:opacity-50"
           >
             {submitting ? "Submitting…" : "Submit order"}
@@ -194,3 +210,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
