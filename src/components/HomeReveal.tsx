@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/data";
 import { ProductOrderForm } from "@/components/ProductOrderForm";
 import { BottomSheet } from "@/components/BottomSheet";
+import { ProductGallery } from "@/components/ProductDetail";
 
 export function HomeReveal({ products }: { products: Product[] }) {
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
@@ -89,15 +89,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
             className={`reveal ${visible[index] ? "reveal-in" : ""} lg:min-h-screen lg:flex lg:items-stretch border-b border-border last:border-b-0`}
           >
             <div className={`hidden lg:block lg:w-1/2 relative ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
-              {product.image_url && (
-                <Image
-                  src={product.image_url}
-                  alt={product.name}
-                  fill
-                  sizes="50vw"
-                  className="object-cover"
-                />
-              )}
+              <ProductGallery product={product} sizes="50vw" />
               <div className="photo-scrim-top" aria-hidden="true" />
               <div className="absolute inset-x-0 top-0 flex items-start justify-end p-8 text-on-photo">
                 <span className="mono-num text-xs">{itemNumber} — {String(products.length).padStart(2, "0")}</span>
@@ -128,15 +120,7 @@ export function HomeReveal({ products }: { products: Product[] }) {
                 they no longer fade in/out with each section's reveal. */}
             <div className="lg:hidden bg-bg-raised">
               <div className="relative aspect-[4/5] w-full overflow-hidden">
-                {product.image_url && (
-                  <Image
-                    src={product.image_url}
-                    alt={product.name}
-                    fill
-                    sizes="100vw"
-                    className="object-cover"
-                  />
-                )}
+                <ProductGallery product={product} sizes="100vw" />
                 <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5 text-on-photo">
                   <p className="font-body font-medium text-base truncate">{product.name}</p>
                   <span className="mono-num text-xs shrink-0">
