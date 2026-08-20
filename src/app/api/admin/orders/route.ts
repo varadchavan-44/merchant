@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   let query = supabase
     .from("orders")
     .select(
-      "id, order_code, buyer_name, mobile_number, id_number, enrolment_number, day_scholar, hostel_name, room_number, status, utr, screenshot_url, ref_code, created_at, order_items(id, quantity, unit_price_paise, products(name), product_sizes(size_label))"
+      "id, order_code, buyer_name, mobile_number, id_number, enrolment_number, day_scholar, hostel_name, room_number, status, utr, screenshot_url, ref_code, created_at, order_items(id, quantity, unit_price_paise, custom_name, custom_number, products(name), product_sizes(size_label))"
     )
     .order("created_at", { ascending: false });
 

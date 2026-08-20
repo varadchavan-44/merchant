@@ -7,6 +7,61 @@ import { formatPrice } from "@/lib/data";
 import { ProductOrderForm } from "@/components/ProductOrderForm";
 import { BottomSheet } from "@/components/BottomSheet";
 
+// Instagram-style horizontal scroll-snap gallery. Falls back to the
+// single legacy image_url if a product has no gallery rows yet.
+function ProductGallery({ product, sizes }: { product: Product; sizes: string }) {
+  const images = product.images.length > 0
+    ? product.images
+    : product.image_url
+      ? [{ id: "legacy", url: product.image_url, sort_order: 0 }]
+      : [];
+  const [active, setActive] = useState(0);
+
+  if (images.length === 0) return null;
+
+  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
+    const el = e.currentTarget;
+    const index = Math.round(el.scrollLeft / el.clientWidth);
+    setActive(index);
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <div
+        onScroll={handleScroll}
+        className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar"
+      >
+        {images.map((img, i) => (
+          <div key={img.id} className="relative h-full w-full flex-shrink-0 snap-center">
+            <Image
+              src={img.url}
+              alt={product.name}
+              fill
+              sizes={sizes}
+              className="object-cover"
+              priority={i === 0}
+            />
+          </div>
+        ))}
+      </div>
+      {images.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+          {images.map((img, i) => (
+            <span
+              key={img.id}
+              className="w-1.5 h-1.5 rounded-full transition-opacity duration-150"
+              style={{
+                background: "var(--paper, #fff)",
+                opacity: i === active ? 1 : 0.4,
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProductDetail({ product }: { product: Product }) {
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -15,9 +70,7 @@ export function ProductDetail({ product }: { product: Product }) {
       {/* Desktop: 50/50 split, image sticky, details independently scrollable */}
       <div className="hidden lg:grid lg:grid-cols-2">
         <div className="relative h-screen sticky top-0">
-          {product.image_url && (
-            <Image src={product.image_url} alt={product.name} fill sizes="50vw" className="object-cover" priority />
-          )}
+          <ProductGallery product={product} sizes="50vw" />
         </div>
         <div className="px-10 py-16 max-w-md mx-auto w-full">
           <h1 className="font-display font-medium text-4xl leading-tight mb-3">{product.name}</h1>
@@ -31,13 +84,10 @@ export function ProductDetail({ product }: { product: Product }) {
         </div>
       </div>
 
-      {/* Mobile: full-bleed image, fixed bottom bar, bottom-sheet buy flow */}
-{/* Mobile: IG-post image, caption block below, bottom-sheet buy flow */}
+      {/* Mobile: IG-post image gallery, caption block below, bottom-sheet buy flow */}
       <div className="lg:hidden">
         <div className="relative aspect-[4/5] w-full">
-          {product.image_url && (
-            <Image src={product.image_url} alt={product.name} fill sizes="100vw" className="object-cover" priority />
-          )}
+          <ProductGallery product={product} sizes="100vw" />
         </div>
         <div className="border-t border-border px-5 py-4">
           <div className="flex items-center justify-between gap-4 mb-3">

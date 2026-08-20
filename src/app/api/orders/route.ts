@@ -122,15 +122,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not create order." }, { status: 500 });
   }
 
-  const { error: itemError } = await supabase.from("order_items").insert(
-    items.map((item) => ({
-      order_id: order!.id,
-      product_id: item.productId,
-      size_id: item.sizeId,
-      quantity: item.quantity,
-      unit_price_paise: item.unitPricePaise,
-    }))
-  );
+  const orderItemRows = items.flatMap((item) => {
+    if (item.customizations && item.customizations.length > 0) {
+      // One row per unit so each shirt's name/number is unambiguous.
+      return item.customizations.map((c) => ({
+        order_id: order!.id,
+        product_id: item.productId,
+        size_id: item.sizeId,
+        quantity: 1,
+        unit_price_paise: item.unitPricePaise,
+        custom_name: c.name as string | null,
+        custom_number: c.number as string | null,
+      }));
+    }
+    return [
+      {
+        order_id: order!.id,
+        product_id: item.productId,
+        size_id: item.sizeId,
+        quantity: item.quantity,
+        unit_price_paise: item.unitPricePaise,
+        custom_name: null as string | null,
+        custom_number: null as string | null,
+      },
+    ];
+  });
+
+  const { error: itemError } = await supabase.from("order_items").insert(orderItemRows);
 
   if (itemError) {
     return NextResponse.json({ error: "Order created but items failed — contact admin." }, { status: 500 });

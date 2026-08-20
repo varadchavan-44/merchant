@@ -14,12 +14,15 @@ export async function getProducts(): Promise<Product[]> {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, sizes:product_sizes(*)")
+    .select("*, sizes:product_sizes(*), images:product_images(*)")
     .eq("active", true)
     .order("sort_order");
 
   if (error || !data) return [];
-  return data as Product[];
+  return (data as Product[]).map((p) => ({
+    ...p,
+    images: [...p.images].sort((a, b) => a.sort_order - b.sort_order),
+  }));
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
@@ -28,12 +31,13 @@ export async function getProduct(id: string): Promise<Product | null> {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, sizes:product_sizes(*)")
+    .select("*, sizes:product_sizes(*), images:product_images(*)")
     .eq("id", id)
     .single();
 
   if (error || !data) return null;
-  return data as Product;
+  const product = data as Product;
+  return { ...product, images: [...product.images].sort((a, b) => a.sort_order - b.sort_order) };
 }
 
 export async function getDropConfig(): Promise<DropConfig> {

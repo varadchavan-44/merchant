@@ -247,3 +247,11 @@ body {
   background: var(--border);
   margin: 10px auto 4px;
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

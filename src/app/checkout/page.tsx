@@ -116,10 +116,18 @@ export default function CheckoutPage() {
         <div className="border border-border p-5 mb-10">
           {draft.items.map((item) => (
             <div
-              key={`${item.productId}-${item.sizeId}`}
+              key={item.lineId}
               className="flex items-baseline justify-between text-sm mb-2"
             >
-              <span>{item.productName}</span>
+              <span>
+                {item.productName}
+                {item.customizations && item.customizations.length > 0 && (
+                  <span className="text-ink-muted">
+                    {" "}
+                    ({item.customizations.map((c) => `${c.name} #${c.number}`).join(", ")})
+                  </span>
+                )}
+              </span>
               <span className="text-ink-muted mono-num">
                 size {item.sizeLabel} × {item.quantity}
               </span>

@@ -9,6 +9,12 @@ interface SizeRow {
   commit_threshold: string; // kept as string while editing, parsed on submit
 }
 
+interface AdminProductImage {
+  id: string;
+  url: string;
+  sort_order: number;
+}
+
 interface AdminProduct {
   id: string;
   name: string;
@@ -16,8 +22,12 @@ interface AdminProduct {
   image_url: string;
   price_paise: number;
   active: boolean;
+  is_customizable: boolean;
+  images: AdminProductImage[];
   sizes: { id: string; size_label: string; commit_threshold: number; commit_count: number; status: string }[];
 }
+
+const MAX_IMAGES = 6;
 
 const EMPTY_SIZE_ROW: SizeRow = { size_label: "", commit_threshold: "" };
 const EMPTY_FORM = {
@@ -38,7 +48,9 @@ export function AdminProductForm() {
   const [description, setDescription] = useState(EMPTY_FORM.description);
   const [priceRupees, setPriceRupees] = useState(EMPTY_FORM.priceRupees);
   const [sizeRows, setSizeRows] = useState<SizeRow[]>(EMPTY_FORM.sizeRows);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isCustomizable, setIsCustomizable] = useState(false);
+  const [existingImages, setExistingImages] = useState<AdminProductImage[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [rowNotice, setRowNotice] = useState<Record<string, string>>({});
@@ -67,12 +79,30 @@ export function AdminProductForm() {
     setSizeRows((rows) => rows.filter((_, i) => i !== index));
   }
 
+  const imageSlotsLeft = MAX_IMAGES - existingImages.length - newImageFiles.length;
+
+  function handleNewImagesSelected(files: FileList | null) {
+    if (!files) return;
+    const incoming = Array.from(files).slice(0, Math.max(0, imageSlotsLeft));
+    setNewImageFiles((prev) => [...prev, ...incoming]);
+  }
+
+  function removeExistingImage(id: string) {
+    setExistingImages((imgs) => imgs.filter((i) => i.id !== id));
+  }
+
+  function removeNewImage(index: number) {
+    setNewImageFiles((files) => files.filter((_, i) => i !== index));
+  }
+
   function resetForm() {
     setName(EMPTY_FORM.name);
     setDescription(EMPTY_FORM.description);
     setPriceRupees(EMPTY_FORM.priceRupees);
     setSizeRows([{ ...EMPTY_SIZE_ROW }]);
-    setImageFile(null);
+    setIsCustomizable(false);
+    setExistingImages([]);
+    setNewImageFiles([]);
     setError("");
   }
 
@@ -90,7 +120,9 @@ export function AdminProductForm() {
         ? p.sizes.map((s) => ({ id: s.id, size_label: s.size_label, commit_threshold: String(s.commit_threshold) }))
         : [{ ...EMPTY_SIZE_ROW }]
     );
-    setImageFile(null);
+    setIsCustomizable(p.is_customizable);
+    setExistingImages([...p.images].sort((a, b) => a.sort_order - b.sort_order));
+    setNewImageFiles([]);
     setError("");
     setMode(p.id);
   }
@@ -124,6 +156,7 @@ export function AdminProductForm() {
     form.set("name", name.trim());
     form.set("description", description.trim());
     form.set("price_paise", String(Math.round(Number(priceRupees) * 100)));
+    form.set("is_customizable", String(isCustomizable));
     form.set(
       "sizes",
       JSON.stringify(
@@ -134,9 +167,13 @@ export function AdminProductForm() {
         }))
       )
     );
-    if (imageFile) form.set("image", imageFile);
+    for (const file of newImageFiles) form.append("images", file);
 
     const isEditing = mode !== "new" && mode !== null;
+    if (isEditing) {
+      form.set("keep_image_ids", JSON.stringify(existingImages.map((i) => i.id)));
+    }
+
     const url = isEditing ? `/api/admin/products/${mode}` : "/api/admin/products";
     const method = isEditing ? "PATCH" : "POST";
 
@@ -237,6 +274,15 @@ export function AdminProductForm() {
             />
           </div>
 
+          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-ink-soft">
+            <input
+              type="checkbox"
+              checked={isCustomizable}
+              onChange={(e) => setIsCustomizable(e.target.checked)}
+            />
+            Customizable — buyer enters a name &amp; number to print
+          </label>
+
           <div className="flex flex-col gap-2">
             <label className="text-xs uppercase tracking-wide text-ink-soft">Sizes and commit thresholds</label>
             {sizeRows.map((row, i) => (
@@ -278,16 +324,56 @@ export function AdminProductForm() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <label className="text-xs uppercase tracking-wide text-ink-soft">
-              {mode === "new" ? "Product photo (JPG/PNG)" : "Replace product photo (optional)"}
+              Photos (up to {MAX_IMAGES}) — first one shown as the thumbnail, rest scroll like an Instagram post
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-              className="text-sm"
-            />
+            {(existingImages.length > 0 || newImageFiles.length > 0) && (
+              <div className="flex flex-wrap gap-2">
+                {existingImages.map((img) => (
+                  <div key={img.id} className="relative w-16 h-16 border border-line overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- admin-only thumbnail */}
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingImage(img.id)}
+                      className="absolute top-0 right-0 w-5 h-5 text-xs flex items-center justify-center"
+                      style={{ background: "var(--paper)", color: "var(--warn)" }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {newImageFiles.map((file, i) => (
+                  <div key={i} className="relative w-16 h-16 border border-line overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- admin-only thumbnail */}
+                    <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeNewImage(i)}
+                      className="absolute top-0 right-0 w-5 h-5 text-xs flex items-center justify-center"
+                      style={{ background: "var(--paper)", color: "var(--warn)" }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {imageSlotsLeft > 0 ? (
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  handleNewImagesSelected(e.target.files);
+                  e.target.value = "";
+                }}
+                className="text-sm"
+              />
+            ) : (
+              <p className="text-xs text-ink-soft">Max {MAX_IMAGES} images reached — remove one to add another.</p>
+            )}
           </div>
 
           <button
@@ -319,6 +405,11 @@ export function AdminProductForm() {
                 <div className="flex items-center gap-3">
                   <span>{p.name}</span>
                   <span className="mono-num text-ink-soft">{formatPrice(p.price_paise)}</span>
+                  {p.is_customizable && (
+                    <span className="text-xs uppercase tracking-wide" style={{ color: "var(--signal)" }}>
+                      customizable
+                    </span>
+                  )}
                   {!p.active && (
                     <span className="text-xs uppercase tracking-wide" style={{ color: "var(--warn)" }}>
                       archived
@@ -328,6 +419,7 @@ export function AdminProductForm() {
                 <div className="text-xs text-ink-soft mt-1">
                   {p.sizes.map((s) => `${s.size_label} (${s.commit_count}/${s.commit_threshold})`).join(", ") ||
                     "no sizes yet"}
+                  {p.images.length > 0 ? ` · ${p.images.length} photo${p.images.length > 1 ? "s" : ""}` : ""}
                 </div>
               </div>
               <div className="flex items-center gap-3 text-xs">
