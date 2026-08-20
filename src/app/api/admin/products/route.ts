@@ -73,17 +73,25 @@ export async function POST(req: NextRequest) {
     imageUrl = pub.publicUrl;
   }
 
-  const galleryUrls: string[] = [];
-  for (const img of images) {
-    const safeName = img.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
-    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, img);
-    if (uploadError) {
-      return NextResponse.json({ error: `Image upload failed: ${uploadError.message}` }, { status: 500 });
-    }
-    const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-    galleryUrls.push(pub.publicUrl);
+  const galleryResults = await Promise.all(
+    images.map(async (img) => {
+      const safeName = img.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+      const { error: uploadError } = await supabase.storage.from("product-images").upload(path, img);
+      if (uploadError) {
+        throw new Error(`Image upload failed: ${uploadError.message}`);
+      }
+      const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+      return pub.publicUrl;
+    })
+  ).catch((err) => {
+    return err as Error;
+  });
+
+  if (galleryResults instanceof Error) {
+    return NextResponse.json({ error: galleryResults.message }, { status: 500 });
   }
+  const galleryUrls: string[] = galleryResults;
 
   const { data: product, error: productError } = await supabase
     .from("products")
