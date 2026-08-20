@@ -9,7 +9,7 @@ import { BottomSheet } from "@/components/BottomSheet";
 
 // Instagram-style horizontal scroll-snap gallery. Falls back to the
 // single legacy image_url if a product has no gallery rows yet.
-function ProductGallery({ product, sizes }: { product: Product; sizes: string }) {
+export function ProductGallery({ product, sizes }: { product: Product; sizes: string }) {
   const images = product.images.length > 0
     ? product.images
     : product.image_url
