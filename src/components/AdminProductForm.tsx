@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { formatPrice } from "@/lib/data";
+import { compressImage } from "@/lib/image-compression";
 
 interface SizeRow {
   id?: string; // present for existing sizes, absent for newly added rows
@@ -51,6 +52,7 @@ export function AdminProductForm() {
   const [isCustomizable, setIsCustomizable] = useState(false);
   const [existingImages, setExistingImages] = useState<AdminProductImage[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [compressingImages, setCompressingImages] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [rowNotice, setRowNotice] = useState<Record<string, string>>({});
@@ -81,10 +83,17 @@ export function AdminProductForm() {
 
   const imageSlotsLeft = MAX_IMAGES - existingImages.length - newImageFiles.length;
 
-  function handleNewImagesSelected(files: FileList | null) {
+  async function handleNewImagesSelected(files: FileList | null) {
     if (!files) return;
     const incoming = Array.from(files).slice(0, Math.max(0, imageSlotsLeft));
-    setNewImageFiles((prev) => [...prev, ...incoming]);
+    if (incoming.length === 0) return;
+    setCompressingImages(true);
+    try {
+      const compressed = await Promise.all(incoming.map(compressImage));
+      setNewImageFiles((prev) => [...prev, ...compressed]);
+    } finally {
+      setCompressingImages(false);
+    }
   }
 
   function removeExistingImage(id: string) {
@@ -366,16 +375,20 @@ export function AdminProductForm() {
               </div>
             )}
             {imageSlotsLeft > 0 ? (
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  handleNewImagesSelected(e.target.files);
-                  e.target.value = "";
-                }}
-                className="text-sm"
-              />
+              <>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={compressingImages}
+                  onChange={(e) => {
+                    handleNewImagesSelected(e.target.files);
+                    e.target.value = "";
+                  }}
+                  className="text-sm disabled:opacity-50"
+                />
+                {compressingImages && <p className="text-xs text-ink-soft">Compressing photos…</p>}
+              </>
             ) : (
               <p className="text-xs text-ink-soft">Max {MAX_IMAGES} images reached — remove one to add another.</p>
             )}
@@ -383,7 +396,7 @@ export function AdminProductForm() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || compressingImages}
             className="px-4 py-2 border border-ink self-start disabled:opacity-50"
             style={{ background: "var(--ink)", color: "var(--paper)" }}
           >
