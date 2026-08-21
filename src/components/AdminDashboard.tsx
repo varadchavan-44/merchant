@@ -204,7 +204,9 @@ export function AdminDashboard() {
                     .map(
                       (i) =>
                         `${i.products?.name} (${i.product_sizes?.size_label}) ×${i.quantity}` +
-                        (i.custom_name ? ` [${i.custom_name} #${i.custom_number}]` : "")
+                        (i.custom_name
+                          ? ` [${i.custom_name}${i.custom_number ? ` #${i.custom_number}` : ""}]`
+                          : "")
                     )
                     .join(", ")}{" "}
                   — {formatPrice(o.order_items.reduce((s, i) => s + i.unit_price_paise * i.quantity, 0))}
