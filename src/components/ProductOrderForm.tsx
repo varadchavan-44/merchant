@@ -68,7 +68,7 @@ export function ProductOrderForm({
     if (product.is_customizable) {
       const trimmed = units.slice(0, qty).map((u) => ({
         name: u.name.trim(),
-        number: product.requires_number ? u.number.trim() : undefined,
+        number: product.requires_number ? (u.number ?? "").trim() : undefined,
       }));
       const missingName = trimmed.some((u) => !u.name);
       const missingNumber = product.requires_number && trimmed.some((u) => !u.number);
@@ -201,3 +201,4 @@ export function ProductOrderForm({
     </form>
   );
 }
+
