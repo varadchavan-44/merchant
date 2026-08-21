@@ -31,13 +31,14 @@ export interface Product {
   image_url: string;
   price_paise: number;
   is_customizable: boolean;
+  requires_number: boolean;
   sizes: ProductSize[];
   images: ProductImage[];
 }
 
 export interface UnitCustomization {
   name: string;
-  number: string;
+  number?: string;
 }
 
 export interface DropConfig {
