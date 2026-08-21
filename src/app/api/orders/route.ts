@@ -56,6 +56,55 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // SECURITY: unitPricePaise on each cart item comes from the browser and
+  // must never be trusted — anyone can edit it via devtools before
+  // checkout. Look up the real price per product from the DB here, verify
+  // each size actually belongs to the claimed product, and use only the
+  // DB price when building order_items below.
+  const sizeIds = [...new Set(items.map((i) => i.sizeId))];
+  const { data: sizeRows, error: sizeLookupError } = await supabase
+    .from("product_sizes")
+    .select("id, product_id, products(price_paise, active, is_customizable, requires_number)")
+    .in("id", sizeIds);
+
+  if (sizeLookupError) {
+    return NextResponse.json({ error: "Could not verify cart contents." }, { status: 500 });
+  }
+
+  type SizeRow = {
+    id: string;
+    product_id: string;
+    products: { price_paise: number; active: boolean; is_customizable: boolean; requires_number: boolean } | null;
+  };
+  const sizeMap = new Map<string, SizeRow>((sizeRows as SizeRow[]).map((r) => [r.id, r]));
+
+  for (const item of items) {
+    const row = sizeMap.get(item.sizeId);
+    if (!row || !row.products) {
+      return NextResponse.json({ error: "One of the items in your cart no longer exists." }, { status: 400 });
+    }
+    if (row.product_id !== item.productId) {
+      return NextResponse.json({ error: "Cart contents don't match — please refresh and try again." }, { status: 400 });
+    }
+    if (!row.products.active) {
+      return NextResponse.json({ error: "One of the items in your cart is no longer available." }, { status: 400 });
+    }
+    if (row.products.is_customizable) {
+      const units = item.customizations ?? [];
+      if (units.length !== item.quantity) {
+        return NextResponse.json({ error: "Missing name/number details for one of your items." }, { status: 400 });
+      }
+      for (const u of units) {
+        if (!u.name || !u.name.trim()) {
+          return NextResponse.json({ error: "Enter a name for every shirt." }, { status: 400 });
+        }
+        if (row.products.requires_number && (!u.number || !u.number.trim())) {
+          return NextResponse.json({ error: "Enter a number for every shirt." }, { status: 400 });
+        }
+      }
+    }
+  }
+
   let screenshotUrl: string | null = null;
   if (screenshot && screenshot.size > 0) {
     const path = `screenshots/${Date.now()}-${screenshot.name}`;
@@ -123,6 +172,10 @@ export async function POST(req: NextRequest) {
   }
 
   const orderItemRows = items.flatMap((item) => {
+    // Guaranteed present and validated above — this is the real price,
+    // never item.unitPricePaise from the client.
+    const verifiedPrice = sizeMap.get(item.sizeId)!.products!.price_paise;
+
     if (item.customizations && item.customizations.length > 0) {
       // One row per unit so each shirt's name/number is unambiguous.
       return item.customizations.map((c) => ({
@@ -130,9 +183,9 @@ export async function POST(req: NextRequest) {
         product_id: item.productId,
         size_id: item.sizeId,
         quantity: 1,
-        unit_price_paise: item.unitPricePaise,
+        unit_price_paise: verifiedPrice,
         custom_name: c.name as string | null,
-        custom_number: c.number as string | null,
+        custom_number: (c.number ?? null) as string | null,
       }));
     }
     return [
@@ -141,7 +194,7 @@ export async function POST(req: NextRequest) {
         product_id: item.productId,
         size_id: item.sizeId,
         quantity: item.quantity,
-        unit_price_paise: item.unitPricePaise,
+        unit_price_paise: verifiedPrice,
         custom_name: null as string | null,
         custom_number: null as string | null,
       },
@@ -156,3 +209,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ orderCode: usedOrderCode });
 }
+
