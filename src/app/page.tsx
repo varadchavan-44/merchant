@@ -23,7 +23,7 @@ export default async function LandingPage() {
       </main>
 
       <footer className="site-footer border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-ink-muted flex flex-wrap items-center justify-between gap-2">
+        <div className="max-w-6xl mx-auto px-6 pt-6 pb-24 lg:py-6 text-xs text-ink-muted flex flex-wrap items-center justify-between gap-2">
           <span>
             All sales subject to our{" "}
             <Link href="/legal" className="underline hover:text-ink transition-colors duration-150">
