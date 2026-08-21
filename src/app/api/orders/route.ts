@@ -132,12 +132,12 @@ export async function POST(req: NextRequest) {
     const safeName = screenshot.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `screenshots/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
     const { error: uploadError } = await supabase.storage
-      .from("payment-screenshots")
+      .from("payment-screenshot")
       .upload(path, screenshot);
     if (uploadError) {
       return NextResponse.json({ error: "Screenshot upload failed." }, { status: 500 });
     }
-    const { data: pub } = supabase.storage.from("payment-screenshots").getPublicUrl(path);
+    const { data: pub } = supabase.storage.from("payment-screenshot").getPublicUrl(path);
     screenshotUrl = pub.publicUrl;
   }
 
@@ -241,5 +241,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ orderCode: usedOrderCode });
 }
-
 
