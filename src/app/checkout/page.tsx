@@ -159,13 +159,17 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="eyebrow mb-1.5 block">Payment reference number</label>
+            <label className="eyebrow mb-1.5 block">Payment reference number (UTR)</label>
             <input
               value={utr}
               onChange={(e) => setUtr(e.target.value)}
               placeholder="e.g. 402819XXXXXX"
               className="w-full rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
             />
+            <p className="text-xs text-ink-muted mt-1">
+              Find this in your UPI app's transaction/payment history, labeled &quot;UTR&quot; or
+              &quot;Ref No.&quot;
+            </p>
           </div>
 
           <div>
