@@ -66,9 +66,18 @@ export function ProductOrderForm({
 
     let customizations: UnitCustomization[] | undefined;
     if (product.is_customizable) {
-      const trimmed = units.slice(0, qty).map((u) => ({ name: u.name.trim(), number: u.number.trim() }));
-      if (trimmed.some((u) => !u.name || !u.number)) {
-        setError("Enter a name and number for every shirt.");
+      const trimmed = units.slice(0, qty).map((u) => ({
+        name: u.name.trim(),
+        number: product.requires_number ? u.number.trim() : undefined,
+      }));
+      const missingName = trimmed.some((u) => !u.name);
+      const missingNumber = product.requires_number && trimmed.some((u) => !u.number);
+      if (missingName || missingNumber) {
+        setError(
+          product.requires_number
+            ? "Enter a name and number for every shirt."
+            : "Enter a name for every shirt."
+        );
         return;
       }
       customizations = trimmed;
@@ -137,7 +146,9 @@ export function ProductOrderForm({
 
       {product.is_customizable && (
         <div>
-          <p className="eyebrow mb-3">Name &amp; number to print</p>
+          <p className="eyebrow mb-3">
+            {product.requires_number ? "Name & number to print" : "Name to print"}
+          </p>
           <div className="flex flex-col gap-3">
             {units.slice(0, qty).map((unit, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -148,13 +159,15 @@ export function ProductOrderForm({
                   placeholder="Name"
                   className="flex-1 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised focus:outline-none focus:border-ink transition-colors duration-150"
                 />
-                <input
-                  value={unit.number}
-                  onChange={(e) => updateUnit(i, "number", e.target.value)}
-                  placeholder="Number"
-                  inputMode="numeric"
-                  className="w-24 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised mono-num focus:outline-none focus:border-ink transition-colors duration-150"
-                />
+                {product.requires_number && (
+                  <input
+                    value={unit.number ?? ""}
+                    onChange={(e) => updateUnit(i, "number", e.target.value)}
+                    placeholder="Number"
+                    inputMode="numeric"
+                    className="w-24 rounded-md border border-border px-3 py-2 text-sm bg-bg-raised mono-num focus:outline-none focus:border-ink transition-colors duration-150"
+                  />
+                )}
               </div>
             ))}
           </div>
