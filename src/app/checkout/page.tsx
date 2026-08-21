@@ -170,25 +170,37 @@ export default function CheckoutPage() {
 
           <div>
             <label className="eyebrow mb-1.5 block">Payment screenshot</label>
-            <input
-              type="file"
-              accept="image/*"
-              disabled={compressingScreenshot}
-              onChange={async (e) => {
-                const file = e.target.files?.[0] ?? null;
-                if (!file) {
-                  setScreenshot(null);
-                  return;
-                }
-                setCompressingScreenshot(true);
-                try {
-                  setScreenshot(await compressImage(file));
-                } finally {
-                  setCompressingScreenshot(false);
-                }
-              }}
-              className="w-full text-sm disabled:opacity-50"
-            />
+            <label
+              className={`flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2.5 text-sm bg-bg-raised transition-colors duration-150 ${
+                compressingScreenshot ? "opacity-50" : "cursor-pointer hover:border-ink"
+              }`}
+            >
+              <span className={screenshot ? "text-ink truncate" : "text-ink-muted"}>
+                {screenshot ? screenshot.name : "Choose a file…"}
+              </span>
+              <span className="shrink-0 px-3 py-1 rounded-md border border-border text-xs font-semibold">
+                Browse
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                disabled={compressingScreenshot}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  if (!file) {
+                    setScreenshot(null);
+                    return;
+                  }
+                  setCompressingScreenshot(true);
+                  try {
+                    setScreenshot(await compressImage(file));
+                  } finally {
+                    setCompressingScreenshot(false);
+                  }
+                }}
+                className="sr-only"
+              />
+            </label>
             {compressingScreenshot && <p className="text-xs text-ink-muted mt-1">Compressing…</p>}
           </div>
 
