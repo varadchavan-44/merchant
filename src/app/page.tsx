@@ -23,8 +23,17 @@ export default async function LandingPage() {
       </main>
 
       <footer className="site-footer border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-ink-muted flex justify-between">
-          <span>VNIT Nagpur — student-run, not affiliated with the institute administration.</span>
+        <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-ink-muted flex flex-wrap items-center justify-between gap-2">
+          <span>
+            All sales subject to our{" "}
+            <Link href="/legal" className="underline hover:text-ink transition-colors duration-150">
+              terms &amp; policy
+            </Link>
+            . Contact:{" "}
+            <a href="mailto:merchnguys@gmail.com" className="underline hover:text-ink transition-colors duration-150">
+              merchnguys@gmail.com
+            </a>
+          </span>
           <Link href="/status" className="hover:text-ink transition-colors duration-150">
             Order status
           </Link>
