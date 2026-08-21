@@ -41,6 +41,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
   }
 
+  // Cart quantity lives in sessionStorage and is fully editable via
+  // devtools — the "max 5" limit in the UI is not enforced anywhere
+  // server-side without this check. Doesn't affect money (price is
+  // verified below regardless), but an unbounded quantity could distort
+  // a commit-then-print threshold or just create an unexpected order.
+  const MAX_QTY_PER_LINE = 5;
+  for (const item of items) {
+    if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > MAX_QTY_PER_LINE) {
+      return NextResponse.json({ error: "Quantity per size must be between 1 and 5." }, { status: 400 });
+    }
+  }
+
   // Every buyer field is mandatory, except hostel/room which only apply
   // to non-day-scholars.
   if (!buyer.name?.trim() || !buyer.mobile?.trim() || !buyer.idNumber?.trim() || !buyer.enrolmentNumber?.trim()) {
@@ -107,7 +119,11 @@ export async function POST(req: NextRequest) {
 
   let screenshotUrl: string | null = null;
   if (screenshot && screenshot.size > 0) {
-    const path = `screenshots/${Date.now()}-${screenshot.name}`;
+    if (!screenshot.type.startsWith("image/")) {
+      return NextResponse.json({ error: "Payment screenshot must be an image file." }, { status: 400 });
+    }
+    const safeName = screenshot.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = `screenshots/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
     const { error: uploadError } = await supabase.storage
       .from("payment-screenshots")
       .upload(path, screenshot);
@@ -204,7 +220,16 @@ export async function POST(req: NextRequest) {
   const { error: itemError } = await supabase.from("order_items").insert(orderItemRows);
 
   if (itemError) {
-    return NextResponse.json({ error: "Order created but items failed — contact admin." }, { status: 500 });
+    // Items failed to insert after the order row (and its UTR) were
+    // already committed. Without cleanup, the UTR stays permanently
+    // claimed by an empty order and the buyer can never retry — even
+    // though nothing was actually recorded for their payment. Delete the
+    // orphaned order so the UTR frees up and they can simply try again.
+    await supabase.from("orders").delete().eq("id", order.id);
+    return NextResponse.json(
+      { error: "Something went wrong creating your order — please try again." },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ orderCode: usedOrderCode });
