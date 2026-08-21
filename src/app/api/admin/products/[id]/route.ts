@@ -19,6 +19,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const newImages = form.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
   const keepImageIdsRaw = form.get("keep_image_ids"); // JSON string array of existing product_images.id to retain
   const isCustomizableRaw = form.get("is_customizable");
+  const requiresNumberRaw = form.get("requires_number");
 
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Product name is required." }, { status: 400 });
@@ -52,6 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     image_url?: string;
     active?: boolean;
     is_customizable?: boolean;
+    requires_number?: boolean;
   } = {
     name: name.trim(),
     description: typeof description === "string" ? description.trim() : "",
@@ -63,6 +65,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
   if (typeof isCustomizableRaw === "string") {
     update.is_customizable = isCustomizableRaw === "true";
+  }
+  if (typeof requiresNumberRaw === "string") {
+    update.requires_number = requiresNumberRaw === "true";
   }
 
   if (image && image.size > 0) {
