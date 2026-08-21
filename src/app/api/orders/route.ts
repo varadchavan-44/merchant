@@ -83,12 +83,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not verify cart contents." }, { status: 500 });
   }
 
-  type SizeRow = {
-    id: string;
-    product_id: string;
-    products: { price_paise: number; active: boolean; is_customizable: boolean; requires_number: boolean } | null;
-  };
-  const sizeMap = new Map<string, SizeRow>((sizeRows as SizeRow[]).map((r) => [r.id, r]));
+  type ProductInfo = { price_paise: number; active: boolean; is_customizable: boolean; requires_number: boolean };
+  // Without generated Supabase types, the client infers embedded relations
+  // as arrays regardless of actual cardinality — normalize to a single
+  // object (or null) here rather than fighting it with an unsafe cast.
+  type RawSizeRow = { id: string; product_id: string; products: ProductInfo | ProductInfo[] | null };
+  type SizeRow = { id: string; product_id: string; products: ProductInfo | null };
+
+  const sizeMap = new Map<string, SizeRow>(
+    ((sizeRows ?? []) as RawSizeRow[]).map((r) => [
+      r.id,
+      { id: r.id, product_id: r.product_id, products: Array.isArray(r.products) ? r.products[0] ?? null : r.products },
+    ])
+  );
 
   for (const item of items) {
     const row = sizeMap.get(item.sizeId);
@@ -234,4 +241,5 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ orderCode: usedOrderCode });
 }
+
 
