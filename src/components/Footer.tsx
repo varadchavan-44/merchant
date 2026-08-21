@@ -6,7 +6,7 @@ export function Footer() {
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <p className="text-xs text-ink-soft">
           © {new Date().getFullYear()} MerchNguys. All sales subject to our{" "}
-          <Link href="/policy" className="underline hover:text-ink transition-colors duration-150">
+          <Link href="/legal" className="underline hover:text-ink transition-colors duration-150">
             terms &amp; policy
           </Link>
           .
