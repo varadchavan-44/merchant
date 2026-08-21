@@ -24,6 +24,7 @@ interface AdminProduct {
   price_paise: number;
   active: boolean;
   is_customizable: boolean;
+  requires_number: boolean;
   images: AdminProductImage[];
   sizes: { id: string; size_label: string; commit_threshold: number; commit_count: number; status: string }[];
 }
@@ -50,6 +51,7 @@ export function AdminProductForm() {
   const [priceRupees, setPriceRupees] = useState(EMPTY_FORM.priceRupees);
   const [sizeRows, setSizeRows] = useState<SizeRow[]>(EMPTY_FORM.sizeRows);
   const [isCustomizable, setIsCustomizable] = useState(false);
+  const [requiresNumber, setRequiresNumber] = useState(true);
   const [existingImages, setExistingImages] = useState<AdminProductImage[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [compressingImages, setCompressingImages] = useState(false);
@@ -110,6 +112,7 @@ export function AdminProductForm() {
     setPriceRupees(EMPTY_FORM.priceRupees);
     setSizeRows([{ ...EMPTY_SIZE_ROW }]);
     setIsCustomizable(false);
+    setRequiresNumber(true);
     setExistingImages([]);
     setNewImageFiles([]);
     setError("");
@@ -130,6 +133,7 @@ export function AdminProductForm() {
         : [{ ...EMPTY_SIZE_ROW }]
     );
     setIsCustomizable(p.is_customizable);
+    setRequiresNumber(p.requires_number);
     setExistingImages([...p.images].sort((a, b) => a.sort_order - b.sort_order));
     setNewImageFiles([]);
     setError("");
@@ -166,6 +170,7 @@ export function AdminProductForm() {
     form.set("description", description.trim());
     form.set("price_paise", String(Math.round(Number(priceRupees) * 100)));
     form.set("is_customizable", String(isCustomizable));
+    form.set("requires_number", String(requiresNumber));
     form.set(
       "sizes",
       JSON.stringify(
@@ -296,6 +301,17 @@ export function AdminProductForm() {
             />
             Customizable — buyer enters a name &amp; number to print
           </label>
+
+          {isCustomizable && (
+            <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-ink-soft pl-5">
+              <input
+                type="checkbox"
+                checked={requiresNumber}
+                onChange={(e) => setRequiresNumber(e.target.checked)}
+              />
+              Also require a number (uncheck for name-only designs)
+            </label>
+          )}
 
           <div className="flex flex-col gap-2">
             <label className="text-xs uppercase tracking-wide text-ink-soft">Sizes and commit thresholds</label>
