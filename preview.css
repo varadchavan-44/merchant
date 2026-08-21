@@ -1,0 +1,118 @@
+/*
+  Grok audit → implementation. Each block maps to one numbered item
+  from the audit. Nothing here is !important except the two spots
+  overriding an inline style (gallery dots) — everything else wins on
+  cascade layering alone, since this file sits outside Tailwind's
+  @layer utilities.
+*/
+
+/* 1. Cooler, less-yellow base; more separation between bg and raised
+      surfaces so warm product photography doesn't wash into the page. */
+.pv-root {
+  --bg: #eceadf;
+  --bg-raised: #ded9c9;
+  --border: #cfc9b7;
+
+  /* 2. Muted text raised for contrast — was #8a8371 (~2.9:1 on cream),
+        this sits closer to ~5:1. */
+  --ink-muted: #625a49;
+
+  /* 3. Stronger, darker CTA — more presence against the warm base. */
+  --accent: #1c2a37;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pv-root {
+    --bg: #131210;
+    --bg-raised: #1c1a15;
+    --border: #322f27;
+    --ink-muted: #9c947f;
+    --accent: #1c2a37;
+  }
+}
+
+/* 4. Typography hierarchy — heavier, larger product titles; eyebrows
+      register instead of reading as a footnote. */
+.pv-root h1.font-display,
+.pv-root h2.font-display {
+  font-weight: 700;
+}
+.pv-root h2.font-display {
+  margin-bottom: 1rem;
+}
+.pv-root h1.font-display {
+  margin-bottom: 0.75rem;
+}
+@media (min-width: 1024px) {
+  .pv-root h1.font-display,
+  .pv-root h2.font-display {
+    font-size: 3rem;
+  }
+}
+.pv-root .eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+}
+.pv-root .eyebrow.mb-8 {
+  margin-bottom: 1.25rem; /* tightens the gap to the title below it */
+}
+
+/* 5. CTA presence — a real lift on hover instead of a flat opacity fade. */
+.pv-root .bg-accent {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.pv-root button.bg-accent:hover {
+  opacity: 1 !important;
+  filter: brightness(1.12);
+}
+
+/* 6. Mobile density — trim the description padding and the spacer band
+      above the fixed taskbar so the layout feels tighter, less beige. */
+@media (max-width: 1023px) {
+  .pv-root .px-5.pt-4.pb-6 {
+    padding-top: 0.75rem;
+    padding-bottom: 1.5rem;
+  }
+  .pv-root .lg\:hidden.h-24 {
+    height: 4.5rem;
+  }
+}
+
+/* 7. Gallery dots — were a flat page-bg dot at low opacity (set via
+      inline style referencing --paper), unreadable against light product
+      photos regardless of theme. Give them a fixed light fill with a
+      dark ring so they read against any photo. */
+.pv-root [class*="rounded-full"][class*="transition-opacity"] {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+/* 8. Rounded direction. Product photography goes from full-bleed to an
+      inset card: padding on the (already relatively-positioned) image
+      containers pulls the absolutely-positioned <Image fill> and the
+      scrim in from the edge — both use inset:0, which resolves against
+      the padding box, so they follow automatically — then the image
+      itself gets the actual radius. CTAs, the mobile taskbar, and the
+      bottom sheet pick up the same radius scale for one consistent
+      language instead of a mix of sharp/pill/12px. */
+.pv-root img.object-cover {
+  border-radius: 1.25rem;
+}
+.pv-root [class*="lg:w-1/2"][class*="relative"],
+.pv-root [class*="h-screen"][class*="sticky"] {
+  padding: 1rem;
+}
+.pv-root [class*="aspect-[4/5]"] {
+  padding: 0.625rem;
+}
+
+.pv-root .mobile-taskbar {
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+.pv-root .sheet-panel {
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+.pv-root .rounded-md.bg-accent {
+  border-radius: 9999px;
+}
