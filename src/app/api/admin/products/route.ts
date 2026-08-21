@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
   const image = form.get("image") as File | null;
   const images = form.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
   const isCustomizableRaw = form.get("is_customizable");
+  const requiresNumberRaw = form.get("requires_number");
 
   if (images.length > 6) {
     return NextResponse.json({ error: "Up to 6 images per product." }, { status: 400 });
@@ -101,6 +102,7 @@ export async function POST(req: NextRequest) {
       image_url: imageUrl || galleryUrls[0] || "",
       price_paise: Math.round(Number(pricePaiseRaw)),
       is_customizable: isCustomizableRaw === "true",
+      requires_number: requiresNumberRaw === "true",
     })
     .select()
     .single();
