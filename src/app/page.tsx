@@ -32,6 +32,10 @@ export default async function LandingPage() {
             . Contact:{" "}
             <a href="mailto:merchnguys@gmail.com" className="underline hover:text-ink transition-colors duration-150">
               merchnguys@gmail.com
+            </a>{" "}
+            ·{" "}
+            <a href="tel:+918668481084" className="underline hover:text-ink transition-colors duration-150">
+              +91 86684 81084
             </a>
           </span>
           <Link href="/status" className="hover:text-ink transition-colors duration-150">
@@ -42,3 +46,4 @@ export default async function LandingPage() {
     </div>
   );
 }
+
